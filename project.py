@@ -1,3 +1,10 @@
+#! /usr/bin/env python3
+# _*_ coding: utf8 _*_
+#
+# Faire la gestion des erreurs et les codes de retours
+#
+# Version 27/09/2022
+#
 import os
 from multiprocessing import shared_memory
 
