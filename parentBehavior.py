@@ -1,4 +1,11 @@
-def parentBehavior():
+#! /usr/bin/env python3
+# _*_ coding: utf8 _*_
+#
+# Version 30/09/2022
+#
+import os
+
+def parentBehavior(pathTube1, pathTube2):
     print('Ouverture du tube1 en écriture...')
     fifo1 = open(pathTube1, "w")
     print('Ouverture du tube2 en lecture...')
