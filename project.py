@@ -8,13 +8,10 @@
 import os
 from multiprocessing import shared_memory
 
-shm_segment1 = shared_memory.SharedMemory(name='012345', create=True, size=10)
+shm_segment1 = shared_memory.SharedMemory(name='leclerc', create=True, size=10)
 print('Nom du segment mémoire partagée :', shm_segment1.name)
 print('Taille du segment mémoire partagée en octets via premier accès :', len(shm_segment1.buf))
 shm_segment1.buf[:10] = bytearray([74, 73, 72, 71, 70, 69, 68, 67, 66, 65])
-shm_segment2 = shared_memory.SharedMemory(shm_segment1.name)
-print('Taille du segment mémoire partagée en octets via second accès :', len(shm_segment2.buf[:10]))
-print('Contenu du segment mémoire partagée en octets via second accès :', bytes(shm_segment2.buf[:10]))
 
 print('Création des tubes...')
 
@@ -53,6 +50,9 @@ elif newPid == 0:
     os.unlink(pathTube2)
     os.execlp("ipcs", "ipcs", "-m")
 else:
+    shm_segment2 = shared_memory.SharedMemory(shm_segment1.name)
+    print('Taille du segment mémoire partagée en octets via second accès :', len(shm_segment2.buf[:10]))
+    print('Contenu du segment mémoire partagée en octets via second accès :', bytes(shm_segment2.buf[:10]))
     print('Ouverture du tube1 en lecture...')
     fifo1 = open(pathTube1, "r")
     print('Ouverture du tube2 en écriture...')
@@ -72,7 +72,7 @@ else:
     print('Fermeture du tube2...')
     fifo2.close()
     os.wait()
+    shm_segment2.close()
 
-shm_segment2.close()
 shm_segment1.close()
 shm_segment1.unlink()
