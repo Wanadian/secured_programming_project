@@ -7,8 +7,8 @@ import os
 from multiprocessing import shared_memory
 from builtins import OSError
 from asyncio.windows_events import NULL
-from OSPS2022.Projet.git.secured_programming_project.childBehavior import childBehavior
-from OSPS2022.Projet.git.secured_programming_project.parentBehavior import parentBehavior
+from childBehavior import childBehavior
+from parentBehavior import parentBehavior
 
 
 def createTubes(pathTube1, pathTube2):
@@ -47,23 +47,3 @@ def createChild(shareMemory, pathTube1, pathTube2):
         parentBehavior(pathTube1, pathTube2)
     else:
         childBehavior(shareMemory, pathTube1, pathTube2)
-
-
-def projet():
-    name = "leclerc"
-    create = True
-    size = 10
-
-    data = bytearray([74, 73, 72, 71, 70, 69, 68, 67, 66, 65])
-
-    pathTube1 = "/tmp/tubenommeprincipalsecond.fifo"
-    pathTube2 = "/tmp/tubenommesecondprincipal.fifo"
-    
-    shareMemory = createSharedMemory(name, create, size)
-    fillSharedMemory(shareMemory, data)
-    createTubes(pathTube1, pathTube2)
-    createChild(shareMemory, pathTube1, pathTube2)
-    closeSegments(shareMemory)
-
-
-projet()
