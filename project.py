@@ -5,12 +5,8 @@
 #
 # Version 27/09/2022
 #
-import os
-from action import createSharedMemory
-from action import fillSharedMemory
-from action import createTubes
-from action import createChild
-from action import closeSegments
+
+from action import createSharedMemory, fillSharedMemory, createTubes, createChild, closeSegments
 
 def projet():
     name = "leclerc"
