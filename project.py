@@ -6,7 +6,7 @@
 # Version 27/09/2022
 #
 
-from action import createSharedMemory, fillSharedMemory, createTubes, createChild, closeSegments
+from action import createSharedMemory, fillSharedMemory, createTubes, createChild, closeSegments, lanchWatchDog
 
 name = "leclerc"
 create = True
@@ -21,4 +21,5 @@ shareMemory = createSharedMemory(name, create, size)
 fillSharedMemory(shareMemory, data)
 createTubes(pathTube1, pathTube2)
 createChild(shareMemory, pathTube1, pathTube2)
+lanchWatchDog()
 closeSegments(shareMemory)

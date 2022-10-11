@@ -6,9 +6,9 @@
 import os
 from multiprocessing import shared_memory
 from builtins import OSError
-from asyncio.windows_events import NULL
-from servers.childBehavior import childBehavior
+from server.childBehavior import childBehavior
 from server.parentBehavior import parentBehavior
+from watchdog.watchDog import watchDog
 
 
 def createTubes(pathTube1, pathTube2):
@@ -26,7 +26,6 @@ def createSharedMemory(name, create, size):
         return shared_memory.SharedMemory(name, create, size)
     except (ValueError, FileExistsError, OSError) as error:
         print("Error: ", error)
-    return NULL
 
 
 def fillSharedMemory(shareMemory, data):
@@ -47,3 +46,7 @@ def createChild(shareMemory, pathTube1, pathTube2):
         parentBehavior(pathTube1, pathTube2)
     else:
         childBehavior(shareMemory, pathTube1, pathTube2)
+
+
+def lanchWatchDog():
+    watchDog()
