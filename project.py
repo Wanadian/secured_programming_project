@@ -6,7 +6,7 @@
 # Version 27/09/2022
 #
 
-from action import createSharedMemory, fillSharedMemory, createTubes, createChild, closeSegments, lanchWatchDog
+from action import createSharedMemory, fillSharedMemory, createTubes, createChild, closeSegments, lauchWatchDog
 
 name = "leclerc"
 create = True
@@ -15,11 +15,13 @@ size = 10
 data = bytearray([74, 73, 72, 71, 70, 69, 68, 67, 66, 65])
 
 pathTube1 = "/tmp/tubenommeprincipalsecond.fifo"
-pathTube2 = "/tmp/tubenommesecondprincipal.fifo"
+pathTube2 = "/tmp/tubrm enommesecondprincipal.fifo"
 
 shareMemory = createSharedMemory(name, create, size)
+print("pppppppppp")
+print(shareMemory)
 fillSharedMemory(shareMemory, data)
 createTubes(pathTube1, pathTube2)
 createChild(shareMemory, pathTube1, pathTube2)
-lanchWatchDog()
 closeSegments(shareMemory)
+lauchWatchDog()

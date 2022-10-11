@@ -7,7 +7,7 @@ import os
 from multiprocessing import shared_memory
 from builtins import OSError
 from server.childBehavior import childBehavior
-from server.parentBehavior import parentBehavior
+from server.parentBehavior import communicationWatchDog, parentBehavior
 from watchdog.watchDog import watchDog
 
 
@@ -25,6 +25,7 @@ def createSharedMemory(name, create, size):
     try:
         return shared_memory.SharedMemory(name, create, size)
     except (ValueError, FileExistsError, OSError) as error:
+        print("Michel")
         print("Error: ", error)
 
 
@@ -48,5 +49,5 @@ def createChild(shareMemory, pathTube1, pathTube2):
         childBehavior(shareMemory, pathTube1, pathTube2)
 
 
-def lanchWatchDog():
+def lauchWatchDog():
     watchDog()

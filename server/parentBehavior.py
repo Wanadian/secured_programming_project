@@ -4,6 +4,7 @@
 # Version 30/09/2022
 #
 import os, socket, sys
+import time
 
 
 def parentBehavior(pathTube1, pathTube2):
@@ -40,20 +41,20 @@ def communicationChild(pathTube1, pathTube2):
 
 def communicationWatchDog():
     hostWatchDog = '127.0.0.1'
-    portWatchDog = 2222
+    portWatchDog = 1111
     mySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
     try:
         mySocket.bind((hostWatchDog, portWatchDog))
     except socket.error:
-        print('\nImpossible d\'établir la liaison du socket à l\'adresse choisie ({}:{}) !\n'.format(hostWatchDog, portWatchDog))
+        print('\nImpossible d\'établir la liaison du socket à l\'adresse choisie ({}:{}) -- Parent !\n'.format(hostWatchDog, portWatchDog))
         sys.exit()
     while True:
-        print('Serveur prêt, en attente de requêtes sur {}:{}...'.format(hostWatchDog, portWatchDog))
+        print('Serveur prêt, en attente de requêtes sur {}:{}.. -- Parent.'.format(hostWatchDog, portWatchDog))
         mySocket.listen(5)
 
-        (connexion, address) = mySocket.accept()
+        connexion, address = mySocket.accept()
         print('Client connecté, adresse IP %s, port %s' % (address[0], address[1]))
-        print('Tapez le mot FIN pour terminer.')
 
         connexion.send(bytes('Connected to server','UTF-8'))
         while True:
@@ -64,15 +65,14 @@ def communicationWatchDog():
                 break
             msgServeur = bytes('Server> Connexion ok', 'UTF-8')
             connexion.send(msgServeur)
+            time.sleep(2)
 
         connexion.send(bytes('Fin de connexion !', 'UTF-8'))
         print('Connexion interrompue.')
         connexion.close()
-
-        ch = input('<R>ecommencer <T>erminer ? ')
-        if ch.upper() == 'T':
-            break
+        break
 
     mySocket.close()
     del mySocket
     sys.exit(0)
+    
