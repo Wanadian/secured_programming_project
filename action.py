@@ -7,8 +7,8 @@ import os
 from multiprocessing import shared_memory
 from builtins import OSError
 from asyncio.windows_events import NULL
-from childBehavior import childBehavior
-from parentBehavior import parentBehavior
+from servers.childBehavior import childBehavior
+from server.parentBehavior import parentBehavior
 
 
 def createTubes(pathTube1, pathTube2):
