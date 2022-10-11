@@ -8,21 +8,17 @@
 
 from action import createSharedMemory, fillSharedMemory, createTubes, createChild, closeSegments
 
-def projet():
-    name = "leclerc"
-    create = True
-    size = 10
+name = "leclerc"
+create = True
+size = 10
 
-    data = bytearray([74, 73, 72, 71, 70, 69, 68, 67, 66, 65])
+data = bytearray([74, 73, 72, 71, 70, 69, 68, 67, 66, 65])
 
-    pathTube1 = "/tmp/tubenommeprincipalsecond.fifo"
-    pathTube2 = "/tmp/tubenommesecondprincipal.fifo"
-    
-    shareMemory = createSharedMemory(name, create, size)
-    fillSharedMemory(shareMemory, data)
-    createTubes(pathTube1, pathTube2)
-    createChild(shareMemory, pathTube1, pathTube2)
-    closeSegments(shareMemory)
+pathTube1 = "/tmp/tubenommeprincipalsecond.fifo"
+pathTube2 = "/tmp/tubenommesecondprincipal.fifo"
 
-
-projet()
+shareMemory = createSharedMemory(name, create, size)
+fillSharedMemory(shareMemory, data)
+createTubes(pathTube1, pathTube2)
+createChild(shareMemory, pathTube1, pathTube2)
+closeSegments(shareMemory)
