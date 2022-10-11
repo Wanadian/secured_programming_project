@@ -5,6 +5,7 @@
 #
 import os
 
+
 def parentBehavior(pathTube1, pathTube2):
     try:
         print('Ouverture du tube1 en écriture...')

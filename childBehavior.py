@@ -6,6 +6,7 @@
 import os
 from multiprocessing import shared_memory
 
+
 def childBehavior(shareMemory, pathTube1, pathTube2):
     try:
         shareMemoryC = shared_memory.SharedMemory(shareMemory.name)
