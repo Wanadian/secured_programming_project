@@ -6,7 +6,7 @@
 import os
 import socket, sys
 import time
-from server.parentBehavior import communicationWatchDog
+from server.primaryServer import communicationWatchDog
 
 
 def watchDog():

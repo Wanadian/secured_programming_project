@@ -6,8 +6,8 @@
 import os
 from multiprocessing import shared_memory
 from builtins import OSError
-from server.childBehavior import childBehavior
-from server.parentBehavior import communicationWatchDog, parentBehavior
+from server.secondaryServer import childBehavior
+from server.primaryServer import communicationWatchDog, parentBehavior
 from watchdog.watchDog import watchDog
 
 
