@@ -116,7 +116,6 @@ def launchPrimaryServer():
     createTubes(pathTube1, pathTube2)
     createSecondaryServer(sharedMemory, pathTube1, pathTube2)
     closeSegments(sharedMemory)
-    sys.exit(0)
 
 
 launchPrimaryServer();

@@ -3,7 +3,7 @@
 #
 # Version 11/10/2022
 #
-import os, socket, sys, time
+import socket, sys, time
 
 def watchDog(host, port):
     cpt = 0

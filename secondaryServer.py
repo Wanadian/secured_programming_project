@@ -32,6 +32,7 @@ def secondaryServerBehavior(sharedMemory, pathTube1, pathTube2):
         fifo2.close()
         os.wait()
         sharedMemoryC.close()
+        sharedMemoryC.unlink()
         sys.exit(0)
     except OSError as error:
         print("Error:", error)
