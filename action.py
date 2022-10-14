@@ -17,7 +17,7 @@ def createTubes(pathTube1, pathTube2):
         print("Error: ", error)
 
 
-def createSharedMemory(name, create, size):
+def createdSharedMemory(name, create, size):
     try:
         return shared_memory.SharedMemory(name, create, size)
     except (ValueError, FileExistsError, OSError) as error:

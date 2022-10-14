@@ -7,19 +7,17 @@ import os
 import socket, sys
 import time
 
-def watchDog():
-    HOST = '127.0.0.1'
-    PORT = 1111
+def watchDog(host, port):
     cpt = 0
 
     time.sleep(2)
     mySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
-        mySocket.connect((HOST, PORT))
+        mySocket.connect((host, port))
     except socket.error:
-        print ("\nConnexion au serveur impossible à {}:{} !\n".format(HOST, PORT))
+        print ("\nConnexion au serveur impossible à {}:{} !\n".format(host, port))
         sys.exit()
-    print ("Connexion établie avec le serveur de test ({}:{}).".format(HOST, PORT))
+    print ("Connexion établie avec le serveur de test ({}:{}).".format(host, port))
     
     msgServeurraw = mySocket.recv(1024)
     msgServeur = msgServeurraw.decode('UTF-8')
@@ -42,4 +40,3 @@ def watchDog():
     print ("Connexion interrompue. Watchdog")
     mySocket.close()
     del mySocket
-    sys.exit(0)

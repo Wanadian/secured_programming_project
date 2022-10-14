@@ -5,7 +5,7 @@
 #
 import os, socket, sys
 import time
-from action import createSharedMemory, fillSharedMemory, createTubes, closeSegments
+from action import createdSharedMemory, fillSharedMemory, createTubes, closeSegments
 from secondaryServer import secondaryServerBehavior
 from watchDog import watchDog
 
@@ -19,7 +19,7 @@ def createWatchDog(hostWatchDog, portWatchDog):
     elif newPid == 0:
         communicationWatchDog(hostWatchDog, portWatchDog)
     else:
-        watchDog()
+        watchDog(hostWatchDog, portWatchDog)
 
 
 def createSecondaryServer(shareMemory, pathTube1, pathTube2):
@@ -110,10 +110,10 @@ def launchPrimaryServer():
     pathTube1 = "/tmp/tubenommeprincipalsecond.fifo"
     pathTube2 = "/tmp/tubrm enommesecondprincipal.fifo"
 
-    shareMemory = createSharedMemory(name, create, size)
+    createWatchDog(host, port)
+    shareMemory = createdSharedMemory(name, create, size)
     fillSharedMemory(shareMemory, data)
     createTubes(pathTube1, pathTube2)
-    createWatchDog(host, port)
     createSecondaryServer(shareMemory, pathTube1, pathTube2)
     closeSegments(shareMemory)
     sys.exit(0)
