@@ -24,10 +24,10 @@ def createdSharedMemory(name, create, size):
         print("Error: ", error)
 
 
-def fillSharedMemory(shareMemory, data):
-    shareMemory.buf[:shareMemory.size] = data
+def fillSharedMemory(sharedMemory, data):
+    sharedMemory.buf[:len(sharedMemory.buf)] = data
 
 
-def closeSegments(shareMemory):
-    shareMemory.close()
-    shareMemory.unlink()
+def closeSegments(sharedMemory):
+    sharedMemory.close()
+    sharedMemory.unlink()

@@ -7,11 +7,11 @@ import os
 from multiprocessing import shared_memory
 
 
-def secondaryServerBehavior(shareMemory, pathTube1, pathTube2):
+def secondaryServerBehavior(sharedMemory, pathTube1, pathTube2):
     try:
-        shareMemoryC = shared_memory.SharedMemory(shareMemory.name)
-        print('Taille du segment mémoire partagée en octets via second accès :', len(shareMemoryC.buf[:shareMemoryC.size]))
-        print('Contenu du segment mémoire partagée en octets via second accès :', bytes(shareMemoryC.buf[:shareMemoryC.size]))
+        sharedMemoryC = shared_memory.SharedMemory(sharedMemory.name)
+        print('Taille du segment mémoire partagée en octets via second accès :', len(sharedMemoryC.buf[:len(sharedMemory.buf)]))
+        print('Contenu du segment mémoire partagée en octets via second accès :', bytes(sharedMemoryC.buf[:len(sharedMemory.buf)]))
         print('Ouverture du tube1 en lecture...')
         fifo1 = open(pathTube1, "r")
         print('Ouverture du tube2 en écriture...')
@@ -31,6 +31,6 @@ def secondaryServerBehavior(shareMemory, pathTube1, pathTube2):
         print('Fermeture du tube2...')
         fifo2.close()
         os.wait()
-        shareMemoryC.close()
+        sharedMemoryC.close()
     except OSError as error:
         print("Error:", error)

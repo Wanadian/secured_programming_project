@@ -111,11 +111,11 @@ def launchPrimaryServer():
     pathTube2 = "/tmp/tubrm enommesecondprincipal.fifo"
 
     createWatchDog(host, port)
-    shareMemory = createdSharedMemory(name, create, size)
-    fillSharedMemory(shareMemory, data)
+    sharedMemory = createdSharedMemory(name, create, size)
+    fillSharedMemory(sharedMemory, data)
     createTubes(pathTube1, pathTube2)
-    createSecondaryServer(shareMemory, pathTube1, pathTube2)
-    closeSegments(shareMemory)
+    createSecondaryServer(sharedMemory, pathTube1, pathTube2)
+    closeSegments(sharedMemory)
     sys.exit(0)
 
 
