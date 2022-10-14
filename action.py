@@ -25,7 +25,6 @@ def createSharedMemory(name, create, size):
     try:
         return shared_memory.SharedMemory(name, create, size)
     except (ValueError, FileExistsError, OSError) as error:
-        print("Michel")
         print("Error: ", error)
 
 

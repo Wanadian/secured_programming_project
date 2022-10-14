@@ -18,7 +18,6 @@ pathTube1 = "/tmp/tubenommeprincipalsecond.fifo"
 pathTube2 = "/tmp/tubrm enommesecondprincipal.fifo"
 
 shareMemory = createSharedMemory(name, create, size)
-print("pppppppppp")
 print(shareMemory)
 fillSharedMemory(shareMemory, data)
 createTubes(pathTube1, pathTube2)
