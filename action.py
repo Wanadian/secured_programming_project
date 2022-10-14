@@ -25,7 +25,7 @@ def createdSharedMemory(name, create, size):
 
 
 def fillSharedMemory(sharedMemory, data):
-    sharedMemory.buf[:len(sharedMemory.buf)] = data
+    sharedMemory.buf[:len(data)] = data
 
 
 def closeSegments(sharedMemory):
