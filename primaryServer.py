@@ -5,13 +5,58 @@
 #
 import os, socket, sys
 import time
+from action import createSharedMemory, fillSharedMemory, createTubes, closeSegments
+from secondaryServer import childBehavior
+from watchDog import watchDog
 
 
-def parentBehavior(pathTube1, pathTube2):
-    communicationChild(pathTube1, pathTube2)
+def launchWatchDog():
+    newPid = os.fork()
+
+    if newPid < 0:
+        print("fork() impossible")
+        os.abort()
+    elif newPid == 0:
+        communicationWatchDog()
+    else:
+        watchDog()
+
+
+def launchPremaryServer():
+    name = "leclerc"
+    create = True
+    size = 10
+
+    data = bytearray([74, 73, 72, 71, 70, 69, 68, 67, 66, 65])
+
+    pathTube1 = "/tmp/tubenommeprincipalsecond.fifo"
+    pathTube2 = "/tmp/tubrm enommesecondprincipal.fifo"
+
+    shareMemory = createSharedMemory(name, create, size)
+    print(shareMemory)
+    fillSharedMemory(shareMemory, data)
+    createTubes(pathTube1, pathTube2)
+    createChild(shareMemory, pathTube1, pathTube2)
+    closeSegments(shareMemory)
+    launchWatchDog()
+
+
+def createChild(shareMemory, pathTube1, pathTube2):
+    newPid = os.fork()
+    if newPid < 0:
+        print("fork() impossible")
+        os.abort()
+    elif newPid == 0:
+        primaryServerBehavior(pathTube1, pathTube2)
+    else:
+        childBehavior(shareMemory, pathTube1, pathTube2)
+
+        
+def primaryServerBehavior(pathTube1, pathTube2):
+    communicationSecondaryServer(pathTube1, pathTube2)
     communicationWatchDog()
 
-def communicationChild(pathTube1, pathTube2):
+def communicationSecondaryServer(pathTube1, pathTube2):
     try:
         print('Ouverture du tube1 en écriture...')
         fifo1 = open(pathTube1, "w")
@@ -76,3 +121,6 @@ def communicationWatchDog():
     del mySocket
     sys.exit(0)
     
+
+    
+launchPremaryServer();

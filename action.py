@@ -6,10 +6,6 @@
 import os
 from multiprocessing import shared_memory
 from builtins import OSError
-from server.secondaryServer import childBehavior
-from server.primaryServer import communicationWatchDog, parentBehavior
-from watchdog.watchDog import watchDog
-
 
 def createTubes(pathTube1, pathTube2):
     print('Création des tubes...')
@@ -35,18 +31,3 @@ def fillSharedMemory(shareMemory, data):
 def closeSegments(shareMemory):
     shareMemory.close()
     shareMemory.unlink()
-
-
-def createChild(shareMemory, pathTube1, pathTube2):
-    newPid = os.fork()
-    if newPid < 0:
-        print("fork() impossible")
-        os.abort()
-    elif newPid == 0:
-        parentBehavior(pathTube1, pathTube2)
-    else:
-        childBehavior(shareMemory, pathTube1, pathTube2)
-
-
-def lauchWatchDog():
-    watchDog()
