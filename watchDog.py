@@ -38,5 +38,6 @@ def watchDog(host, port):
             break
 
     print ("Connexion interrompue. Watchdog")
+    time.sleep(2)
     mySocket.close()
     del mySocket
