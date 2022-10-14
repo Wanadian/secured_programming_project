@@ -22,8 +22,9 @@ def createWatchDog(hostWatchDog, portWatchDog):
         watchDog()
 
 
-def createSecondaryServer(shareMemory, pathTube1, pathTube2, hostWatchDog, portWatchDog):
+def createSecondaryServer(shareMemory, pathTube1, pathTube2):
     newPid = os.fork()
+
     if newPid < 0:
         print("fork() impossible")
         os.abort()
@@ -95,29 +96,27 @@ def communicationWatchDog(hostWatchDog, portWatchDog):
 
     mySocket.close()
     del mySocket
-    sys.exit(0)
     
 
 def launchPrimaryServer():
+    host = '127.0.0.1'
+    port = 1111
+
     name = "leclerc"
     create = True
     size = 10
-    
-    hostWatchDog = '127.0.0.1'
-    portWatchDog = 1111
-
     data = bytearray([74, 73, 72, 71, 70, 69, 68, 67, 66, 65])
 
     pathTube1 = "/tmp/tubenommeprincipalsecond.fifo"
     pathTube2 = "/tmp/tubrm enommesecondprincipal.fifo"
 
     shareMemory = createSharedMemory(name, create, size)
-    print(shareMemory)
     fillSharedMemory(shareMemory, data)
     createTubes(pathTube1, pathTube2)
-    createSecondaryServer(shareMemory, pathTube1, pathTube2, hostWatchDog, portWatchDog)
+    createWatchDog(host, port)
+    createSecondaryServer(shareMemory, pathTube1, pathTube2)
     closeSegments(shareMemory)
-    createWatchDog(hostWatchDog, portWatchDog)
+    sys.exit(0)
 
 
 launchPrimaryServer();
