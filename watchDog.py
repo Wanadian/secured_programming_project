@@ -3,9 +3,7 @@
 #
 # Version 11/10/2022
 #
-import os
-import socket, sys
-import time
+import os, socket, sys, time
 
 def watchDog(host, port):
     cpt = 0
@@ -41,3 +39,4 @@ def watchDog(host, port):
     time.sleep(2)
     mySocket.close()
     del mySocket
+    sys.exit(0)

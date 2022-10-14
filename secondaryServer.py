@@ -3,7 +3,7 @@
 #
 # Version 30/09/2022
 #
-import os
+import os, sys
 from multiprocessing import shared_memory
 
 
@@ -32,5 +32,6 @@ def secondaryServerBehavior(sharedMemory, pathTube1, pathTube2):
         fifo2.close()
         os.wait()
         sharedMemoryC.close()
+        sys.exit(0)
     except OSError as error:
         print("Error:", error)
