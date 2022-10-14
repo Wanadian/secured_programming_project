@@ -6,55 +6,32 @@
 import os, socket, sys
 import time
 from action import createSharedMemory, fillSharedMemory, createTubes, closeSegments
-from secondaryServer import childBehavior
+from secondaryServer import secondaryServerBehavior
 from watchDog import watchDog
 
 
-def launchWatchDog():
+def createWatchDog(hostWatchDog, portWatchDog):
     newPid = os.fork()
 
     if newPid < 0:
         print("fork() impossible")
         os.abort()
     elif newPid == 0:
-        communicationWatchDog()
+        communicationWatchDog(hostWatchDog, portWatchDog)
     else:
         watchDog()
 
 
-def launchPremaryServer():
-    name = "leclerc"
-    create = True
-    size = 10
-
-    data = bytearray([74, 73, 72, 71, 70, 69, 68, 67, 66, 65])
-
-    pathTube1 = "/tmp/tubenommeprincipalsecond.fifo"
-    pathTube2 = "/tmp/tubrm enommesecondprincipal.fifo"
-
-    shareMemory = createSharedMemory(name, create, size)
-    print(shareMemory)
-    fillSharedMemory(shareMemory, data)
-    createTubes(pathTube1, pathTube2)
-    createChild(shareMemory, pathTube1, pathTube2)
-    closeSegments(shareMemory)
-    launchWatchDog()
-
-
-def createChild(shareMemory, pathTube1, pathTube2):
+def createSecondaryServer(shareMemory, pathTube1, pathTube2, hostWatchDog, portWatchDog):
     newPid = os.fork()
     if newPid < 0:
         print("fork() impossible")
         os.abort()
     elif newPid == 0:
-        primaryServerBehavior(pathTube1, pathTube2)
+        communicationSecondaryServer(pathTube1, pathTube2)
     else:
-        childBehavior(shareMemory, pathTube1, pathTube2)
+        secondaryServerBehavior(shareMemory, pathTube1, pathTube2)
 
-        
-def primaryServerBehavior(pathTube1, pathTube2):
-    communicationSecondaryServer(pathTube1, pathTube2)
-    communicationWatchDog()
 
 def communicationSecondaryServer(pathTube1, pathTube2):
     try:
@@ -84,9 +61,8 @@ def communicationSecondaryServer(pathTube1, pathTube2):
     except OSError as error:
         print("Error:", error)
 
-def communicationWatchDog():
-    hostWatchDog = '127.0.0.1'
-    portWatchDog = 1111
+
+def communicationWatchDog(hostWatchDog, portWatchDog):
     mySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
@@ -122,5 +98,26 @@ def communicationWatchDog():
     sys.exit(0)
     
 
+def launchPrimaryServer():
+    name = "leclerc"
+    create = True
+    size = 10
     
-launchPremaryServer();
+    hostWatchDog = '127.0.0.1'
+    portWatchDog = 1111
+
+    data = bytearray([74, 73, 72, 71, 70, 69, 68, 67, 66, 65])
+
+    pathTube1 = "/tmp/tubenommeprincipalsecond.fifo"
+    pathTube2 = "/tmp/tubrm enommesecondprincipal.fifo"
+
+    shareMemory = createSharedMemory(name, create, size)
+    print(shareMemory)
+    fillSharedMemory(shareMemory, data)
+    createTubes(pathTube1, pathTube2)
+    createSecondaryServer(shareMemory, pathTube1, pathTube2, hostWatchDog, portWatchDog)
+    closeSegments(shareMemory)
+    createWatchDog(hostWatchDog, portWatchDog)
+
+
+launchPrimaryServer();

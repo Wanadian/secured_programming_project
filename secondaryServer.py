@@ -7,7 +7,7 @@ import os
 from multiprocessing import shared_memory
 
 
-def childBehavior(shareMemory, pathTube1, pathTube2):
+def secondaryServerBehavior(shareMemory, pathTube1, pathTube2):
     try:
         shareMemoryC = shared_memory.SharedMemory(shareMemory.name)
         print('Taille du segment mémoire partagée en octets via second accès :', len(shareMemoryC.buf[:shareMemoryC.size]))
