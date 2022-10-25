@@ -10,19 +10,19 @@ from secondaryServer import secondaryServerBehavior
 from watchDog import watchDog
 
 
-def createWatchDog(hostWatchDog, portWatchDog):
+def createWatchDog(hostWatchDog, primaryPort, secondaryPort):
     newPid = os.fork()
 
     if newPid < 0:
         print("fork() impossible")
         os.abort()
     elif newPid == 0:
-        communicationWatchDog(hostWatchDog, portWatchDog)
+        communicationWatchDog(hostWatchDog, primaryPort)
     else:
-        watchDog(hostWatchDog, portWatchDog)
+        watchDog(hostWatchDog, primaryPort, secondaryPort)
 
 
-def createSecondaryServer(shareMemory, pathTube1, pathTube2):
+def createSecondaryServer(shareMemory, pathTube1, pathTube2, secondaryPort, host):
     newPid = os.fork()
 
     if newPid < 0:
@@ -31,7 +31,7 @@ def createSecondaryServer(shareMemory, pathTube1, pathTube2):
     elif newPid == 0:
         communicationSecondaryServer(pathTube1, pathTube2)
     else:
-        secondaryServerBehavior(shareMemory, pathTube1, pathTube2)
+        secondaryServerBehavior(shareMemory, pathTube1, pathTube2, host, secondaryPort)
 
 
 def communicationSecondaryServer(pathTube1, pathTube2):
@@ -100,7 +100,8 @@ def communicationWatchDog(hostWatchDog, portWatchDog):
 
 def launchPrimaryServer():
     host = '127.0.0.1'
-    port = 1111
+    primaryPort = 1111
+    secondaryPort = 2222
 
     name = "leclerc"
     create = True
@@ -110,11 +111,11 @@ def launchPrimaryServer():
     pathTube1 = "/tmp/tubenommeprincipalsecond.fifo"
     pathTube2 = "/tmp/tubrm enommesecondprincipal.fifo"
 
-    createWatchDog(host, port)
+    createWatchDog(host, primaryPort, secondaryPort)
     sharedMemory = createdSharedMemory(name, create, size)
     fillSharedMemory(sharedMemory, data)
     createTubes(pathTube1, pathTube2)
-    createSecondaryServer(sharedMemory, pathTube1, pathTube2)
+    createSecondaryServer(sharedMemory, pathTube1, pathTube2, host, secondaryPort)
     closeSegments(sharedMemory)
 
 
