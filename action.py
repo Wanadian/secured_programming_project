@@ -1,8 +1,6 @@
 #! /usr/bin/env python3
 # _*_ coding: utf8 _*_
-#
-# Version 30/09/2022
-#
+
 import os
 from multiprocessing import shared_memory
 from builtins import OSError
