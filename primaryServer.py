@@ -1,32 +1,32 @@
 #! /usr/bin/env python3
 # _*_ coding: utf8 _*_
-#
-# Version 30/09/2022
-#
-import os, socket, sys
-import time
+
+import os
+import sys
 from action import createdSharedMemory, fillSharedMemory, createTubes, closeSegments
 from secondaryServer import secondaryServerBehavior
-from watchDog import watchDog
+from watchDog import communicationWithWatchDog, linkPrimaryServer, linkSecondaryServer
 
 
-def createWatchDog(hostWatchDog, primaryPort, secondaryPort):
+def launchWatchDog(host, primaryPort, secondaryPort):
     newPid = os.fork()
 
     if newPid < 0:
-        print("fork() impossible")
+        print("Server> fork impossible")
         os.abort()
     elif newPid == 0:
-        communicationWatchDog(hostWatchDog, primaryPort)
+        communicationWithWatchDog(host, primaryPort)
     else:
-        watchDog(hostWatchDog, primaryPort, secondaryPort)
+        linkPrimaryServer(host, primaryPort)
+        linkSecondaryServer(host, secondaryPort)
+        sys.exit(0)
 
 
 def createSecondaryServer(shareMemory, pathTube1, pathTube2, host, secondaryPort):
     newPid = os.fork()
 
     if newPid < 0:
-        print("fork() impossible")
+        print("Server> fork impossible")
         os.abort()
     elif newPid == 0:
         communicationSecondaryServer(pathTube1, pathTube2)
@@ -36,10 +36,11 @@ def createSecondaryServer(shareMemory, pathTube1, pathTube2, host, secondaryPort
 
 def communicationSecondaryServer(pathTube1, pathTube2):
     try:
-        print('Ouverture du tube1 en écriture...')
+        print('Server> Ouverture du tube1 en écriture...')
         fifo1 = open(pathTube1, "w")
-        print('Ouverture du tube2 en lecture...')
+        print('Server> Ouverture du tube2 en lecture...')
         fifo2 = open(pathTube2, "r")
+        print('Server> Prêt')
 
         for i in range(3):
             print('Processus principal prêt pour échanger des messages...')
@@ -63,41 +64,6 @@ def communicationSecondaryServer(pathTube1, pathTube2):
         print("Error:", error)
 
 
-def communicationWatchDog(hostWatchDog, portWatchDog):
-    mySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-    try:
-        mySocket.bind((hostWatchDog, portWatchDog))
-    except socket.error:
-        print('\nImpossible d\'établir la liaison du socket à l\'adresse choisie ({}:{}) -- Parent !\n'.format(hostWatchDog, portWatchDog))
-        sys.exit()
-    while True:
-        print('Serveur prêt, en attente de requêtes sur {}:{}.. -- Parent.'.format(hostWatchDog, portWatchDog))
-        mySocket.listen(5)
-
-        connexion, address = mySocket.accept()
-        print('Client connecté, adresse IP %s, port %s' % (address[0], address[1]))
-
-        connexion.send(bytes('Connected to server','UTF-8'))
-        while True:
-            msgClientraw = connexion.recv(1024)
-            msgClient = msgClientraw.decode('UTF-8')
-            print('watch dog>', msgClient)
-            if msgClient.upper() == "FIN":
-                break
-            msgServeur = bytes('Server> Connexion ok', 'UTF-8')
-            connexion.send(msgServeur)
-            time.sleep(2)
-
-        connexion.send(bytes('Fin de connexion !', 'UTF-8'))
-        print('Connexion interrompue.')
-        connexion.close()
-        break
-
-    mySocket.close()
-    del mySocket
-    
-
 def launchPrimaryServer():
     host = '127.0.0.1'
     primaryPort = 1111
@@ -109,9 +75,9 @@ def launchPrimaryServer():
     data = bytearray([74, 73, 72, 71, 70, 69, 68, 67, 66, 65])
 
     pathTube1 = "/tmp/tubenommeprincipalsecond.fifo"
-    pathTube2 = "/tmp/tubrm enommesecondprincipal.fifo"
+    pathTube2 = "/tmp/tubenommesecondprincipal.fifo"
 
-    createWatchDog(host, primaryPort, secondaryPort)
+    launchWatchDog(host, primaryPort, secondaryPort)
     sharedMemory = createdSharedMemory(name, create, size)
     fillSharedMemory(sharedMemory, data)
     createTubes(pathTube1, pathTube2)
@@ -119,4 +85,4 @@ def launchPrimaryServer():
     closeSegments(sharedMemory)
 
 
-launchPrimaryServer();
+launchPrimaryServer()
