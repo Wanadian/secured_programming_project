@@ -10,7 +10,6 @@ from multiprocessing import shared_memory
 def secondaryServerBehavior(sharedMemory, pathTube1, pathTube2, host, secondaryPort):
     sharedMemorySecondaryServer(sharedMemory, pathTube1, pathTube2)
     communicationWatchDog(host, secondaryPort)
-    sys.exit(0)
     
 
 
@@ -40,6 +39,7 @@ def sharedMemorySecondaryServer(sharedMemory, pathTube1, pathTube2):
         os.wait()
         sharedMemoryC.close()
         sharedMemoryC.unlink()
+        sys.exit(0)
     except OSError as error:
         print("Error:", error)
 

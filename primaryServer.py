@@ -22,7 +22,7 @@ def createWatchDog(hostWatchDog, primaryPort, secondaryPort):
         watchDog(hostWatchDog, primaryPort, secondaryPort)
 
 
-def createSecondaryServer(shareMemory, pathTube1, pathTube2, host, secondaryPort):
+def createSecondaryServer(shareMemory, pathTube1, pathTube2, secondaryPort, host):
     newPid = os.fork()
 
     if newPid < 0:
@@ -101,7 +101,7 @@ def communicationWatchDog(hostWatchDog, portWatchDog):
 def launchPrimaryServer():
     host = '127.0.0.1'
     primaryPort = 1111
-    secondaryPort = 7777
+    secondaryPort = 2222
 
     name = "leclerc"
     create = True
