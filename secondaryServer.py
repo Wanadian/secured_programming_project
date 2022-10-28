@@ -24,7 +24,7 @@ def communicationWithPrimaryServer(pathTube1, pathTube2):
             line = fifo1.readline()
             print("SS> Message recu : " + line + "\n")
             print('SS> Écriture dans le tube2...\n')
-            fifo2.write("Message du process secondaire !")
+            fifo2.write("Message du process secondaire !\n")
             fifo2.flush()
 
         fifo1.close()
