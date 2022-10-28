@@ -22,7 +22,7 @@ def launchWatchDog(host, primaryPort, secondaryPort):
         sys.exit(0)
 
 
-def createSecondaryServer(shareMemory, pathTube1, pathTube2, host, secondaryPort):
+def launchSecondaryServer(shareMemory, pathTube1, pathTube2, host, secondaryPort):
     newPid = os.fork()
 
     if newPid < 0:
@@ -81,7 +81,7 @@ def launchPrimaryServer():
     sharedMemory = createdSharedMemory(name, create, size)
     fillSharedMemory(sharedMemory, data)
     createTubes(pathTube1, pathTube2)
-    createSecondaryServer(sharedMemory, pathTube1, pathTube2, host, secondaryPort)
+    launchSecondaryServer(sharedMemory, pathTube1, pathTube2, host, secondaryPort)
     closeSegments(sharedMemory)
 
 

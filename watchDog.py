@@ -117,17 +117,17 @@ def linkSecondaryServer(host, port):
     del mySocket
 
 
-def communicationWithWatchDog(hostWatchDog, portWatchDog):
+def communicationWithWatchDog(host, port):
     mySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
-        mySocket.bind((hostWatchDog, portWatchDog))
+        mySocket.bind((host, port))
     except socket.error:
         print('\nImpossible d\'établir la liaison du socket à l\'adresse choisie ({}:{}) -- Parent !\n'.format(
-            hostWatchDog, portWatchDog))
+            host, port))
         sys.exit()
     while True:
-        print('Serveur prêt, en attente de requêtes sur {}:{}.. -- Parent.'.format(hostWatchDog, portWatchDog))
+        print('Serveur prêt, en attente de requêtes sur {}:{}.. -- Parent.'.format(host, port))
         mySocket.listen(5)
 
         connexion, address = mySocket.accept()
