@@ -2,12 +2,13 @@
 # _*_ coding: utf8 _*_
 import os
 import sys
+import time
 from multiprocessing import shared_memory
 
 
-def secondaryServerBehavior(sharedMemory, pathTube1, pathTube2):
-    sharedMemorySecondaryServer = shared_memory.SharedMemory(sharedMemory.name)
-    communicationWithPrimaryServer(sharedMemorySecondaryServer, pathTube1, pathTube2)
+def secondaryServerBehavior(sharedMemoryName, pathTube1, pathTube2):
+    sharedMemorySecondaryServer = shared_memory.SharedMemory(sharedMemoryName)
+    communicationWithPrimaryServer(pathTube1, pathTube2)
     sharedMemorySecondaryServer.close()
     sys.exit(0)
 
@@ -30,4 +31,4 @@ def communicationWithPrimaryServer(pathTube1, pathTube2):
         fifo2.close()
         os.wait()
     except OSError as error:
-        print("An error occured in fonction sharedMemorySecondaryServer in file action:", error)
+        print("An error occured in fonction communicationWithPrimaryServer in file action:", error)
