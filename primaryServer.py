@@ -2,6 +2,7 @@
 # _*_ coding: utf8 _*_
 
 import os
+import time
 from multiprocessing import shared_memory
 
 from action import fillSharedMemory
@@ -23,7 +24,7 @@ def communicationWithSecondaryServer(pathTube1, pathTube2):
 
         for i in range(3):
             print('SP> Écriture dans le tube1...\n')
-            fifo1.write("Message du SP")
+            fifo1.write("Message du SP\n")
             fifo1.flush()
             print('SP> Attente de réception de messages...\n')
             line = fifo2.readline()
