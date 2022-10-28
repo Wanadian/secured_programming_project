@@ -1,5 +1,6 @@
 #! /usr/bin/env python3
 # _*_ coding: utf8 _*_
+
 import os
 import socket
 import sys
@@ -171,4 +172,3 @@ def linkToWatchDog(host, port):
     time.sleep(2)
     mySocket.close()
     del mySocket
-

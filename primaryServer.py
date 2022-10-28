@@ -2,7 +2,6 @@
 # _*_ coding: utf8 _*_
 
 import os
-import time
 from multiprocessing import shared_memory
 
 from action import fillSharedMemory
@@ -35,4 +34,3 @@ def communicationWithSecondaryServer(pathTube1, pathTube2):
         os.execlp("ipcs", "ipcs", "-m")
     except OSError as error:
         print("An error occured in fonction communicationWithSecondaryServer in file action:", error)
-
