@@ -11,14 +11,14 @@ def createTubes(pathTube1, pathTube2):
         os.mkfifo(pathTube1, 0o0600)
         os.mkfifo(pathTube2, 0o0600)
     except OSError as error:
-        print("An error occured:", error)
+        print("An error occured in fonction createTubes in file action:", error)
 
 
 def createdSharedMemory(name, create, size):
     try:
         return shared_memory.SharedMemory(name, create, size)
     except (ValueError, FileExistsError, OSError) as error:
-        print("An error occured:", error)
+        print("An error occured in fonction createdSharedMemory in file action:", error)
 
 
 def fillSharedMemory(sharedMemory, data):

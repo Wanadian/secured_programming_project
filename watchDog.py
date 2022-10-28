@@ -5,7 +5,7 @@ import socket
 import sys
 import time
 
-from action import createdSharedMemory
+from action import createdSharedMemory, createTubes
 from primaryServer import primaryServerBehavior
 from secondaryServer import secondaryServerBehavior
 
@@ -22,10 +22,14 @@ def launchWatchDog():
     create = True
     size = 10
 
+    createTubes(pathTube1, pathTube2)
     sharedMemory = createdSharedMemory(name, create, size)
 
     launchPrimaryServer(sharedMemory, pathTube1, pathTube2, host, primaryServerPort)
     launchSecondaryServer(sharedMemory, pathTube1, pathTube2, host, secondaryServerPort)
+
+    sharedMemory.close()
+    sharedMemory.unlink()
 
 
 def launchPrimaryServer(sharedMemory, pathTube1, pathTube2, host, port):
@@ -66,7 +70,7 @@ def openWatchDogConnection(host, port):
 
     while True:
         print('WD> Pret\n')
-        mySocket.listen(5)
+        mySocket.listen(2)
 
         connexion, address = mySocket.accept()
         print('WD> Connexion établie avec un server\n')
@@ -92,7 +96,7 @@ def openWatchDogConnection(host, port):
 
 
 def linkToWatchDog(host, port):
-    time.sleep(5)
+    time.sleep(2)
     attempt = 0
     cpt = 0
     mySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -105,7 +109,7 @@ def linkToWatchDog(host, port):
             print("Serveur> Connexion au watchdog impossible\n")
             if attempt >= 5:
                 sys.exit()
-            time.sleep(2)
+            time.sleep(1)
     print("Server> Connexion établie avec le watchdog\n")
 
     msgServeurraw = mySocket.recv(1024)

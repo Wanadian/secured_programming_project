@@ -2,6 +2,7 @@
 # _*_ coding: utf8 _*_
 
 import os
+import time
 from multiprocessing import shared_memory
 
 from action import fillSharedMemory, createTubes
@@ -12,9 +13,8 @@ def primaryServerBehavior(sharedMemory, pathTube1, pathTube2):
 
     sharedMemoryPrimaryServer = shared_memory.SharedMemory(sharedMemory.name)
     fillSharedMemory(sharedMemoryPrimaryServer, data)
-    createTubes(pathTube1, pathTube2)
     communicationWithSecondaryServer(pathTube1, pathTube2)
-    sharedMemory.close()
+    sharedMemoryPrimaryServer.close()
 
 
 def communicationWithSecondaryServer(pathTube1, pathTube2):
@@ -31,11 +31,12 @@ def communicationWithSecondaryServer(pathTube1, pathTube2):
             line = fifo2.readline()
             print("SP> Message recu : " + line + "\n")
 
+        time.sleep(2)
         fifo1.close()
         fifo2.close()
         os.unlink(pathTube1)
         os.unlink(pathTube2)
         os.execlp("ipcs", "ipcs", "-m")
     except OSError as error:
-        print("An error occured:", error)
+        print("An error occured in fonction communicationWithSecondaryServer in file action:", error)
 
