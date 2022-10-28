@@ -1,5 +1,6 @@
 # secured_programming_project
 
+```plantuml
 @startuml
 entity Client
 entity ServeurPrincipal
@@ -9,8 +10,8 @@ entity WatchDog
 group création des Serveur Principal et Secondaire
 WatchDog -> ServeurPrincipal: Implémentation du Serveur Principal
 ServeurPrincipal --> WatchDog: Confirmation de la création du Serveur Principal
-ServeurPrincipal -> ServeurSecondaire: Implémentation du Serveur Secondaire
-ServeurSecondaire --> ServeurPrincipal: Confirmation de la création du Serveur Principal
+WatchDog-> ServeurSecondaire: Implémentation du Serveur Secondaire
+ServeurSecondaire --> WatchDog: Confirmation de la création du Serveur Secondaire
 end
 
 alt successful case
@@ -62,3 +63,4 @@ else Connexion entre le Client et le Serveur Principal échouée
     WatchDog -> WatchDog: Erreur
 end
 @enduml
+```
