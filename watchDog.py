@@ -6,7 +6,7 @@ import socket
 import sys
 import time
 
-from action import createdSharedMemory, createTubes, fillSharedMemory
+from action import createdSharedMemory, createTubes
 from primaryServer import primaryServerBehavior
 from secondaryServer import secondaryServerBehavior
 
@@ -29,8 +29,7 @@ def launchWatchDog():
     launchPrimaryServer(sharedMemory.name, pathTube1, pathTube2, host, primaryServerPort)
     launchSecondaryServer(sharedMemory.name, pathTube1, pathTube2, host, secondaryServerPort)
 
-    # os.wait()
-    time.sleep(5)
+    os.wait()
 
     print("WD> destroying shared memory\n")
     sharedMemory.close()
@@ -70,50 +69,44 @@ def launchSecondaryServer(sharedMemoryName, pathTube1, pathTube2, host, port):
 
 
 def openWatchDogConnection(host, port):
-    mySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    watchDogSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
-        mySocket.bind((host, port))
+        watchDogSocket.bind((host, port))
     except socket.error:
         print('WD> Impossible d\'établir la liaison du socket\n')
         sys.exit()
 
+    print('WD> Pret\n')
+    watchDogSocket.listen(2)
+
+    connexion, address = watchDogSocket.accept()
+    print('WD> Connexion établie avec un server\n')
+
     while True:
-        print('WD> Pret\n')
-        mySocket.listen(2)
+        connexion.send(bytes('Are you alive ?', 'UTF-8'))
+        messageRecieved = connexion.recv(1024).decode('UTF-8')
+        print('Server> ' + messageRecieved + "\n")
+        if messageRecieved.upper() == "FIN":
+            break
+        time.sleep(2)
 
-        connexion, address = mySocket.accept()
-        print('WD> Connexion établie avec un server\n')
+    print('WD> Connexion interrompue avec le server.\n')
+    connexion.close()
 
-        connexion.send(bytes(' Are you alive ?', 'UTF-8'))
-        while True:
-            msgClientraw = connexion.recv(1024)
-            msgClient = msgClientraw.decode('UTF-8')
-            print('Server> ' + msgClient + "\n")
-            if msgClient.upper() == "FIN":
-                break
-            msgServeur = bytes('WD> Connexion ok', 'UTF-8')
-            connexion.send(msgServeur)
-            time.sleep(2)
-
-        connexion.send(bytes('WD> Fin de connexion !', 'UTF-8'))
-        print('WD> Connexion interrompue.\n')
-        connexion.close()
-        break
-
-    mySocket.close()
-    del mySocket
+    watchDogSocket.close()
+    del watchDogSocket
 
 
 def linkToWatchDog(host, port):
     time.sleep(2)
     attempt = 0
     cpt = 0
-    mySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     while attempt < 5:
         try:
             attempt += 1
-            mySocket.connect((host, port))
+            serverSocket.connect((host, port))
             break
         except socket.error:
             print("Serveur> Connexion au watchdog impossible\n")
@@ -122,53 +115,16 @@ def linkToWatchDog(host, port):
             time.sleep(1)
     print("Server> Connexion établie avec le watchdog\n")
 
-    msgServeurraw = mySocket.recv(1024)
-    msgServeur = msgServeurraw.decode('UTF-8')
-
     while True:
-        if msgServeur.upper() == "FIN":
-            break
-        print("WD>" + msgServeur + "\n")
+        messageRecieved = serverSocket.recv(1024).decode('UTF-8')
+        print("WD> " + messageRecieved + "\n")
 
-        if (cpt < 3):
-            msgClient = bytes('Still Alive !', 'UTF-8')
+        if cpt < 5:
             cpt += 1
-            mySocket.send(msgClient)
-            time.sleep(2)
+            serverSocket.send(bytes('Still alive !', 'UTF-8'))
         else:
-            msgClient = bytes('FIN', 'UTF-8')
-            mySocket.send(msgClient)
+            serverSocket.send(bytes('FIN', 'UTF-8'))
             break
-    # while True:
-    #     print('Serveur prêt, en attente de requêtes sur {}:{}...'.format(host, port))
-    #     mySocket.listen(5)
-    #
-    #     connexion, adresse = mySocket.accept()
-    #     print('Client connecté, adresse IP %s, port %s' % (adresse[0], adresse[1]))
-    #     print('Tapez le mot FIN pour terminer.')
-    #
-    #     connexion.send(bytes(
-    #         'Vous etes connecte au serveur de test. Envoyez vos messages (sur une ligne) ou le mot FIN pour terminer.',
-    #         'UTF-8'))
-    #
-    #     while True:
-    #         msgClientraw = connexion.recv(1024)
-    #         msgClient = msgClientraw.decode('UTF-8')
-    #         print('Client>', msgClient)
-    #         if msgClient.upper() == 'FIN' or msgClient == '':
-    #             break
-    #         msgServeur = bytes(input('Serveur> '), 'UTF-8')
-    #         connexion.send(msgServeur)
-    #
-    #     connexion.send(bytes('Fin de connexion !', 'UTF-8'))
-    #     print('Connexion interrompue.')
-    #     connexion.close()
-    #
-    #     ch = input('<R>ecommencer <T>erminer ? ')
-    #     if ch.upper() == 'T':
-    #         break
 
-    print("Server> Connexion interrompue.\n")
-    time.sleep(2)
-    mySocket.close()
-    del mySocket
+    serverSocket.close()
+    del serverSocket
