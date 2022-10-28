@@ -2,7 +2,6 @@
 # _*_ coding: utf8 _*_
 import os
 import sys
-import time
 from multiprocessing import shared_memory
 
 
