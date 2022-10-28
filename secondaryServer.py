@@ -29,6 +29,5 @@ def communicationWithPrimaryServer(pathTube1, pathTube2):
 
         fifo1.close()
         fifo2.close()
-        os.wait()
     except OSError as error:
         print("An error occured in fonction communicationWithPrimaryServer in file action:", error)
