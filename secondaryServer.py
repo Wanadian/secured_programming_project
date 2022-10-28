@@ -6,13 +6,14 @@ from multiprocessing import shared_memory
 
 
 def secondaryServerBehavior(sharedMemory, pathTube1, pathTube2):
-    sharedMemorySecondaryServer(sharedMemory, pathTube1, pathTube2)
+    sharedMemorySecondaryServer = shared_memory.SharedMemory(sharedMemory.name)
+    communicationWithPrimaryServer(sharedMemorySecondaryServer, pathTube1, pathTube2)
+    sharedMemorySecondaryServer.close()
     sys.exit(0)
 
 
-def sharedMemorySecondaryServer(sharedMemory, pathTube1, pathTube2):
+def communicationWithPrimaryServer(pathTube1, pathTube2):
     try:
-        sharedMemoryC = shared_memory.SharedMemory(sharedMemory.name)
         fifo1 = open(pathTube1, "r")
         fifo2 = open(pathTube2, "w")
         print('SS> Prêt\n')
@@ -28,7 +29,5 @@ def sharedMemorySecondaryServer(sharedMemory, pathTube1, pathTube2):
         fifo1.close()
         fifo2.close()
         os.wait()
-        sharedMemoryC.close()
-        sharedMemoryC.unlink()
     except OSError as error:
-        print("An error occured:", error)
+        print("An error occured in fonction sharedMemorySecondaryServer in file action:", error)
