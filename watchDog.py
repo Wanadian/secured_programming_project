@@ -6,7 +6,7 @@ import socket
 import sys
 import time
 
-from action import createdSharedMemory, createTubes
+from action import createdSharedMemory, createTubes, freeCommunicationSystem
 from primaryServer import primaryServerBehavior
 from secondaryServer import secondaryServerBehavior
 
@@ -23,6 +23,8 @@ def launchWatchDog():
     create = True
     size = 10
 
+    freeCommunicationSystem(name, pathTube1, pathTube2)
+
     sharedMemory = createdSharedMemory(name, create, size)
     createTubes(pathTube1, pathTube2)
 
@@ -31,12 +33,8 @@ def launchWatchDog():
 
     os.wait()
 
-    print("WD> destroying shared memory\n")
-    sharedMemory.close()
-    sharedMemory.unlink()
-    print("WD> destroying tubes\n")
-    os.unlink(pathTube1)
-    os.unlink(pathTube2)
+    print("WD> Freeing communication systems")
+    freeCommunicationSystem(name, pathTube1, pathTube2)
     sys.exit(0)
 
 
@@ -99,7 +97,6 @@ def openWatchDogConnection(host, port):
 
 
 def linkToWatchDog(host, port):
-    time.sleep(2)
     attempt = 0
     cpt = 0
     serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -109,16 +106,15 @@ def linkToWatchDog(host, port):
             serverSocket.connect((host, port))
             break
         except socket.error:
-            print("Serveur> Connexion au watchdog impossible\n")
             if attempt >= 5:
+                print("Serveur> Connexion au watchdog échouée\n")
                 sys.exit()
-            time.sleep(1)
+            time.sleep(5)
     print("Server> Connexion établie avec le watchdog\n")
 
     while True:
         messageRecieved = serverSocket.recv(1024).decode('UTF-8')
         print("WD> " + messageRecieved + "\n")
-
         if cpt < 5:
             cpt += 1
             serverSocket.send(bytes('Still alive !', 'UTF-8'))

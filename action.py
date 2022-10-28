@@ -6,6 +6,23 @@ from multiprocessing import shared_memory
 from builtins import OSError
 
 
+def freeCommunicationSystem(sharedMemoryName, pathTube1, pathTube2):
+    try:
+        os.unlink(pathTube1)
+    except OSError as error:
+        print("Warning:", error)
+    try:
+        os.unlink(pathTube2)
+    except OSError as error:
+        print("Warning:", error)
+    try:
+        sharedMemoryToDelete = shared_memory.SharedMemory(sharedMemoryName)
+        sharedMemoryToDelete.unlink()
+    except OSError as error:
+        print("Warning:", error)
+
+
+
 def createTubes(pathTube1, pathTube2):
     try:
         os.mkfifo(pathTube1, 0o0600)
