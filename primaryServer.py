@@ -2,16 +2,14 @@
 # _*_ coding: utf8 _*_
 
 import os
-import time
 from multiprocessing import shared_memory
 
-from action import fillSharedMemory, createTubes
+from action import fillSharedMemory
 
 
-def primaryServerBehavior(sharedMemory, pathTube1, pathTube2):
+def primaryServerBehavior(sharedMemoryName, pathTube1, pathTube2):
     data = bytearray([74, 73, 72, 71, 70, 69, 68, 67, 66, 65])
-
-    sharedMemoryPrimaryServer = shared_memory.SharedMemory(sharedMemory.name)
+    sharedMemoryPrimaryServer = shared_memory.SharedMemory(sharedMemoryName)
     fillSharedMemory(sharedMemoryPrimaryServer, data)
     communicationWithSecondaryServer(pathTube1, pathTube2)
     sharedMemoryPrimaryServer.close()
@@ -25,17 +23,14 @@ def communicationWithSecondaryServer(pathTube1, pathTube2):
 
         for i in range(3):
             print('SP> Écriture dans le tube1...\n')
-            fifo1.write("Message du SP !")
+            fifo1.write("Message du SP")
             fifo1.flush()
             print('SP> Attente de réception de messages...\n')
             line = fifo2.readline()
             print("SP> Message recu : " + line + "\n")
 
-        time.sleep(2)
         fifo1.close()
         fifo2.close()
-        os.unlink(pathTube1)
-        os.unlink(pathTube2)
         os.execlp("ipcs", "ipcs", "-m")
     except OSError as error:
         print("An error occured in fonction communicationWithSecondaryServer in file action:", error)

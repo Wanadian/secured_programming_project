@@ -5,7 +5,7 @@ import socket
 import sys
 import time
 
-from action import createdSharedMemory, createTubes
+from action import createdSharedMemory, createTubes, fillSharedMemory
 from primaryServer import primaryServerBehavior
 from secondaryServer import secondaryServerBehavior
 
@@ -22,41 +22,50 @@ def launchWatchDog():
     create = True
     size = 10
 
-    createTubes(pathTube1, pathTube2)
     sharedMemory = createdSharedMemory(name, create, size)
+    createTubes(pathTube1, pathTube2)
 
-    launchPrimaryServer(sharedMemory, pathTube1, pathTube2, host, primaryServerPort)
-    launchSecondaryServer(sharedMemory, pathTube1, pathTube2, host, secondaryServerPort)
+    launchPrimaryServer(sharedMemory.name, pathTube1, pathTube2, host, primaryServerPort)
+    launchSecondaryServer(sharedMemory.name, pathTube1, pathTube2, host, secondaryServerPort)
 
+    # os.wait()
+    time.sleep(5)
+
+    print("WD> destroying shared memory\n")
     sharedMemory.close()
     sharedMemory.unlink()
+    print("WD> destroying tubes\n")
+    os.unlink(pathTube1)
+    os.unlink(pathTube2)
+    sys.exit(0)
 
 
-def launchPrimaryServer(sharedMemory, pathTube1, pathTube2, host, port):
+def launchPrimaryServer(sharedMemoryName, pathTube1, pathTube2, host, port):
     newPid = os.fork()
 
     if newPid < 0:
         print("WD> fork impossible\n")
         os.abort()
     elif newPid == 0:
-        openWatchDogConnection(host, port)
-    else:
         linkToWatchDog(host, port)
-        primaryServerBehavior(sharedMemory, pathTube1, pathTube2)
+        primaryServerBehavior(sharedMemoryName, pathTube1, pathTube2)
         sys.exit(0)
+    else:
+        openWatchDogConnection(host, port)
 
 
-def launchSecondaryServer(sharedMemory, pathTube1, pathTube2, host, port):
+def launchSecondaryServer(sharedMemoryName, pathTube1, pathTube2, host, port):
     newPid = os.fork()
 
     if newPid < 0:
         print("WD> fork impossible\n")
         os.abort()
     elif newPid == 0:
-        openWatchDogConnection(host, port)
-    else:
         linkToWatchDog(host, port)
-        secondaryServerBehavior(sharedMemory, pathTube1, pathTube2)
+        secondaryServerBehavior(sharedMemoryName, pathTube1, pathTube2)
+        sys.exit(0)
+    else:
+        openWatchDogConnection(host, port)
 
 
 def openWatchDogConnection(host, port):
