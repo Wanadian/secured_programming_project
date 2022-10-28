@@ -5,8 +5,7 @@ import sys
 from multiprocessing import shared_memory
 
 
-def secondaryServerBehavior(sharedMemory, pathTube1, pathTube2, host, port):
-    # linkToWatchDog(host, port)
+def secondaryServerBehavior(sharedMemory, pathTube1, pathTube2):
     sharedMemorySecondaryServer(sharedMemory, pathTube1, pathTube2)
     sys.exit(0)
 
