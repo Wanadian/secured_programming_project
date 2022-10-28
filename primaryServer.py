@@ -2,29 +2,19 @@
 # _*_ coding: utf8 _*_
 
 import os
+from multiprocessing import shared_memory
 
 from action import fillSharedMemory, createTubes, closeSegments, createdSharedMemory
-from secondaryServer import secondaryServerBehavior
-from watchDog import openWatchDogConnection
 
 
-def primaryServerBehavior():
-    host = '127.0.0.1'
-    port = 2222
-
-    name = "leclerc"
-    create = True
-    size = 10
+def primaryServerBehavior(sharedMemory, pathTube1, pathTube2):
     data = bytearray([74, 73, 72, 71, 70, 69, 68, 67, 66, 65])
 
-    pathTube1 = "/tmp/tubenommeprincipalsecond.fifo"
-    pathTube2 = "/tmp/tubenommesecondprincipal.fifo"
-
-    sharedMemory = createdSharedMemory(name, create, size)
-    fillSharedMemory(sharedMemory, data)
+    sharedMemoryPrimaryServer = shared_memory.SharedMemory(sharedMemory.name)
+    fillSharedMemory(sharedMemoryPrimaryServer, data)
     createTubes(pathTube1, pathTube2)
-    launchSecondaryServer(sharedMemory, pathTube1, pathTube2, host, port)
-    closeSegments(sharedMemory)
+    communicationSecondaryServer(pathTube1, pathTube2)
+    closeSegments(sharedMemoryPrimaryServer)
 
 
 def communicationSecondaryServer(pathTube1, pathTube2):
@@ -56,15 +46,3 @@ def communicationSecondaryServer(pathTube1, pathTube2):
     except OSError as error:
         print("Error:", error)
 
-
-def launchSecondaryServer(shareMemory, pathTube1, pathTube2, host, port):
-    newPid = os.fork()
-
-    if newPid < 0:
-        print("Server> fork impossible")
-        os.abort()
-    elif newPid == 0:
-        # openWatchDogConnection(host, port)
-        communicationSecondaryServer(pathTube1, pathTube2)
-    else:
-        secondaryServerBehavior(shareMemory, pathTube1, pathTube2, host, port)
