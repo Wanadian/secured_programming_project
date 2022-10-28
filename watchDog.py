@@ -42,7 +42,7 @@ def launchPrimaryServer(sharedMemoryName, pathTube1, pathTube2, host, port):
     newPid = os.fork()
 
     if newPid < 0:
-        print("WD> fork impossible\n")
+        print("WD> Fork failed\n")
         os.abort()
     elif newPid == 0:
         linkToWatchDog(host, port)
@@ -56,7 +56,7 @@ def launchSecondaryServer(sharedMemoryName, pathTube1, pathTube2, host, port):
     newPid = os.fork()
 
     if newPid < 0:
-        print("WD> fork impossible\n")
+        print("WD> Fork failed\n")
         os.abort()
     elif newPid == 0:
         linkToWatchDog(host, port)
@@ -72,24 +72,24 @@ def openWatchDogConnection(host, port):
     try:
         watchDogSocket.bind((host, port))
     except socket.error:
-        print('WD> Impossible d\'établir la liaison du socket\n')
+        print('WD> Could not initialise connexion\n')
         sys.exit()
 
-    print('WD> Pret\n')
+    print('WD> Ready\n')
     watchDogSocket.listen(2)
 
     connexion, address = watchDogSocket.accept()
-    print('WD> Connexion établie avec un server\n')
+    print('WD> Connexion with server established\n')
 
     while True:
         connexion.send(bytes('Are you alive ?', 'UTF-8'))
         messageRecieved = connexion.recv(1024).decode('UTF-8')
         print('Server> ' + messageRecieved + "\n")
-        if messageRecieved.upper() == "FIN":
+        if messageRecieved.upper() == "EXIT":
             break
         time.sleep(2)
 
-    print('WD> Connexion interrompue avec le server.\n')
+    print('WD> Connexion with server closed\n')
     connexion.close()
 
     watchDogSocket.close()
@@ -107,10 +107,10 @@ def linkToWatchDog(host, port):
             break
         except socket.error:
             if attempt >= 5:
-                print("Serveur> Connexion au watchdog échouée\n")
+                print("Server> Connexion to watch dog failed\n")
                 sys.exit()
             time.sleep(5)
-    print("Server> Connexion établie avec le watchdog\n")
+    print("Server> Connexion with watch dog established\n")
 
     while True:
         messageRecieved = serverSocket.recv(1024).decode('UTF-8')
@@ -119,7 +119,7 @@ def linkToWatchDog(host, port):
             cpt += 1
             serverSocket.send(bytes('Still alive !', 'UTF-8'))
         else:
-            serverSocket.send(bytes('FIN', 'UTF-8'))
+            serverSocket.send(bytes('EXIT', 'UTF-8'))
             break
 
     serverSocket.close()
