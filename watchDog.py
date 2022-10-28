@@ -5,16 +5,30 @@ import socket
 import sys
 import time
 
+from action import createdSharedMemory
 from primaryServer import primaryServerBehavior
+from secondaryServer import secondaryServerBehavior
 
 
 def launchWatchDog():
     host = '127.0.0.1'
-    port = 1111
-    launchPrimaryServer(host, port)
+    primaryServerPort = 1111
+    secondaryServerPort = 2222
+
+    pathTube1 = "/tmp/tubenommeprincipalsecond.fifo"
+    pathTube2 = "/tmp/tubenommesecondprincipal.fifo"
+
+    name = "leclerc"
+    create = True
+    size = 10
+
+    sharedMemory = createdSharedMemory(name, create, size)
+
+    launchPrimaryServer(sharedMemory, pathTube1, pathTube2, host, primaryServerPort)
+    launchSecondaryServer(sharedMemory, pathTube1, pathTube2, host, secondaryServerPort)
 
 
-def launchPrimaryServer(host, port):
+def launchPrimaryServer(sharedMemory, pathTube1, pathTube2, host, port):
     newPid = os.fork()
 
     if newPid < 0:
@@ -24,10 +38,21 @@ def launchPrimaryServer(host, port):
         openWatchDogConnection(host, port)
     else:
         linkToWatchDog(host, port)
-        primaryServerBehavior()
+        primaryServerBehavior(sharedMemory, pathTube1, pathTube2)
         sys.exit(0)
 
 
+def launchSecondaryServer(sharedMemory, pathTube1, pathTube2, host, port):
+    newPid = os.fork()
+
+    if newPid < 0:
+        print("Server> fork impossible")
+        os.abort()
+    elif newPid == 0:
+        openWatchDogConnection(host, port)
+    else:
+        linkToWatchDog(host, port)
+        secondaryServerBehavior(sharedMemory, pathTube1, pathTube2, host, port)
 
 
 def openWatchDogConnection(host, port):
@@ -67,7 +92,7 @@ def openWatchDogConnection(host, port):
 
 
 def linkToWatchDog(host, port):
-    time.sleep(2)
+    time.sleep(5)
     attempt = 0
     cpt = 0
     mySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
