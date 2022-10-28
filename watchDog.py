@@ -32,7 +32,7 @@ def launchPrimaryServer(sharedMemory, pathTube1, pathTube2, host, port):
     newPid = os.fork()
 
     if newPid < 0:
-        print("WatchDog> fork impossible")
+        print("WD> fork impossible\n")
         os.abort()
     elif newPid == 0:
         openWatchDogConnection(host, port)
@@ -46,13 +46,13 @@ def launchSecondaryServer(sharedMemory, pathTube1, pathTube2, host, port):
     newPid = os.fork()
 
     if newPid < 0:
-        print("Server> fork impossible")
+        print("WD> fork impossible\n")
         os.abort()
     elif newPid == 0:
         openWatchDogConnection(host, port)
     else:
         linkToWatchDog(host, port)
-        secondaryServerBehavior(sharedMemory, pathTube1, pathTube2, host, port)
+        secondaryServerBehavior(sharedMemory, pathTube1, pathTube2)
 
 
 def openWatchDogConnection(host, port):
@@ -61,29 +61,29 @@ def openWatchDogConnection(host, port):
     try:
         mySocket.bind((host, port))
     except socket.error:
-        print('\nWatch dog> Impossible d\'établir la liaison du socket à l\'adresse choisie ({}:{})\n'.format(host, port))
+        print('WD> Impossible d\'établir la liaison du socket\n')
         sys.exit()
 
     while True:
-        print('Watch dog prêt, en attente de requêtes sur {}:{}'.format(host, port))
+        print('WD> Pret\n')
         mySocket.listen(5)
 
         connexion, address = mySocket.accept()
-        print('Client connecté, adresse IP %s, port %s' % (address[0], address[1]))
+        print('WD> Connexion établie avec un server\n')
 
-        connexion.send(bytes('Connected to server', 'UTF-8'))
+        connexion.send(bytes(' Are you alive ?', 'UTF-8'))
         while True:
             msgClientraw = connexion.recv(1024)
             msgClient = msgClientraw.decode('UTF-8')
-            print('watch dog>', msgClient)
+            print('Server> ' + msgClient + "\n")
             if msgClient.upper() == "FIN":
                 break
-            msgServeur = bytes('Server> Connexion ok', 'UTF-8')
+            msgServeur = bytes('WD> Connexion ok', 'UTF-8')
             connexion.send(msgServeur)
             time.sleep(2)
 
-        connexion.send(bytes('Fin de connexion !', 'UTF-8'))
-        print('Connexion interrompue.')
+        connexion.send(bytes('WD> Fin de connexion !', 'UTF-8'))
+        print('WD> Connexion interrompue.\n')
         connexion.close()
         break
 
@@ -102,11 +102,11 @@ def linkToWatchDog(host, port):
             mySocket.connect((host, port))
             break
         except socket.error:
-            print("\nServer> Connexion au serveur impossible à {}:{} !\n".format(host, port))
+            print("Serveur> Connexion au watchdog impossible\n")
             if attempt >= 5:
                 sys.exit()
             time.sleep(2)
-    print("Server> Connexion établie avec le serveur de test ({}:{}).".format(host, port))
+    print("Server> Connexion établie avec le watchdog\n")
 
     msgServeurraw = mySocket.recv(1024)
     msgServeur = msgServeurraw.decode('UTF-8')
@@ -114,10 +114,10 @@ def linkToWatchDog(host, port):
     while True:
         if msgServeur.upper() == "FIN":
             break
-        print("ServeurParent>", msgServeur)
+        print("WD>" + msgServeur + "\n")
 
         if (cpt < 3):
-            msgClient = bytes('Connexion watch ok', 'UTF-8')
+            msgClient = bytes('Still Alive !', 'UTF-8')
             cpt += 1
             mySocket.send(msgClient)
             time.sleep(2)
@@ -154,7 +154,7 @@ def linkToWatchDog(host, port):
     #     if ch.upper() == 'T':
     #         break
 
-    print("Connexion interrompue. Watchdog")
+    print("Server> Connexion interrompue.\n")
     time.sleep(2)
     mySocket.close()
     del mySocket
