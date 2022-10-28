@@ -2,36 +2,29 @@
 # _*_ coding: utf8 _*_
 
 import os
-import sys
-from action import createdSharedMemory, fillSharedMemory, createTubes, closeSegments
+
+from action import fillSharedMemory, createTubes, closeSegments, createdSharedMemory
 from secondaryServer import secondaryServerBehavior
-from watchDog import communicationWithWatchDog, linkPrimaryServer, linkSecondaryServer
+from watchDog import openWatchDogConnection
 
 
-def launchWatchDog(host, primaryPort, secondaryPort):
-    newPid = os.fork()
+def primaryServerBehavior():
+    host = '127.0.0.1'
+    port = 2222
 
-    if newPid < 0:
-        print("Server> fork impossible")
-        os.abort()
-    elif newPid == 0:
-        communicationWithWatchDog(host, primaryPort)
-    else:
-        linkPrimaryServer(host, primaryPort)
-        linkSecondaryServer(host, secondaryPort)
-        sys.exit(0)
+    name = "leclerc"
+    create = True
+    size = 10
+    data = bytearray([74, 73, 72, 71, 70, 69, 68, 67, 66, 65])
 
+    pathTube1 = "/tmp/tubenommeprincipalsecond.fifo"
+    pathTube2 = "/tmp/tubenommesecondprincipal.fifo"
 
-def launchSecondaryServer(shareMemory, pathTube1, pathTube2, host, secondaryPort):
-    newPid = os.fork()
-
-    if newPid < 0:
-        print("Server> fork impossible")
-        os.abort()
-    elif newPid == 0:
-        communicationSecondaryServer(pathTube1, pathTube2)
-    else:
-        secondaryServerBehavior(shareMemory, pathTube1, pathTube2, host, secondaryPort)
+    sharedMemory = createdSharedMemory(name, create, size)
+    fillSharedMemory(sharedMemory, data)
+    createTubes(pathTube1, pathTube2)
+    launchSecondaryServer(sharedMemory, pathTube1, pathTube2, host, port)
+    closeSegments(sharedMemory)
 
 
 def communicationSecondaryServer(pathTube1, pathTube2):
@@ -64,25 +57,14 @@ def communicationSecondaryServer(pathTube1, pathTube2):
         print("Error:", error)
 
 
-def launchPrimaryServer():
-    host = '127.0.0.1'
-    primaryPort = 1111
-    secondaryPort = 7777
+def launchSecondaryServer(shareMemory, pathTube1, pathTube2, host, port):
+    newPid = os.fork()
 
-    name = "leclerc"
-    create = True
-    size = 10
-    data = bytearray([74, 73, 72, 71, 70, 69, 68, 67, 66, 65])
-
-    pathTube1 = "/tmp/tubenommeprincipalsecond.fifo"
-    pathTube2 = "/tmp/tubenommesecondprincipal.fifo"
-
-    launchWatchDog(host, primaryPort, secondaryPort)
-    sharedMemory = createdSharedMemory(name, create, size)
-    fillSharedMemory(sharedMemory, data)
-    createTubes(pathTube1, pathTube2)
-    launchSecondaryServer(sharedMemory, pathTube1, pathTube2, host, secondaryPort)
-    closeSegments(sharedMemory)
-
-
-launchPrimaryServer()
+    if newPid < 0:
+        print("Server> fork impossible")
+        os.abort()
+    elif newPid == 0:
+        # openWatchDogConnection(host, port)
+        communicationSecondaryServer(pathTube1, pathTube2)
+    else:
+        secondaryServerBehavior(shareMemory, pathTube1, pathTube2, host, port)

@@ -1,15 +1,13 @@
 #! /usr/bin/env python3
 # _*_ coding: utf8 _*_
-
-import os, sys
+import os
+import sys
 from multiprocessing import shared_memory
 
-from watchDog import communicationWithWatchDog
 
-
-def secondaryServerBehavior(sharedMemory, pathTube1, pathTube2, host, secondaryPort):
+def secondaryServerBehavior(sharedMemory, pathTube1, pathTube2, host, port):
+    # linkToWatchDog(host, port)
     sharedMemorySecondaryServer(sharedMemory, pathTube1, pathTube2)
-    communicationWithWatchDog(host, secondaryPort)
     sys.exit(0)
 
 
