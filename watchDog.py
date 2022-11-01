@@ -2,11 +2,12 @@
 # _*_ coding: utf8 _*_
 
 import os
+import signal
 import socket
 import sys
 import time
 
-from action import createdSharedMemory, createTubes, freeCommunicationSystem
+from action import createdSharedMemory, createTubes, freeCommunicationSystem, raiseTimeoutError
 from primaryServer import primaryServerBehavior
 from secondaryServer import secondaryServerBehavior
 
@@ -49,7 +50,11 @@ def launchPrimaryServer(sharedMemoryName, pathTube1, pathTube2, host, port):
         primaryServerBehavior(sharedMemoryName, pathTube1, pathTube2)
         sys.exit(0)
     else:
-        openWatchDogConnection(host, port)
+        try:
+            openWatchDogConnection(host, port)
+        except ConnectionError:
+            print("Connexion with primary server aborted")
+            exit(-1)
 
 
 def launchSecondaryServer(sharedMemoryName, pathTube1, pathTube2, host, port):
@@ -83,10 +88,20 @@ def openWatchDogConnection(host, port):
 
     while True:
         connexion.send(bytes('Are you alive ?', 'UTF-8'))
-        messageRecieved = connexion.recv(1024).decode('UTF-8')
-        print('Server> ' + messageRecieved + "\n")
-        if messageRecieved.upper() == "EXIT":
+
+        signal.signal(signal.SIGALRM, raiseTimeoutError)
+        signal.alarm(5)
+        try:
+            messageRecieved = connexion.recv(1024).decode('UTF-8')
+            print('Server> ' + messageRecieved + "\n")
+        except TimeoutError:
+            print("WD> Action timeout")
+            connexion.send(bytes('EXIT', 'UTF-8'))
+            raise ConnectionError
             break
+        finally:
+            signal.signal(signal.SIGALRM, signal.SIG_IGN)
+
         time.sleep(2)
 
     print('WD> Connexion with server closed\n')
@@ -114,13 +129,16 @@ def linkToWatchDog(host, port):
 
     while True:
         messageRecieved = serverSocket.recv(1024).decode('UTF-8')
+        if messageRecieved.upper() == "EXIT":
+            print("Server> Receiving EXIT code, stopping process\n")
+            break
         print("WD> " + messageRecieved + "\n")
         if cpt < 5:
-            cpt += 1
             serverSocket.send(bytes('Still alive !', 'UTF-8'))
         else:
-            serverSocket.send(bytes('EXIT', 'UTF-8'))
-            break
+            print("server> sleeping : no message sent")
+            time.sleep(10)
+        cpt += 1
 
     serverSocket.close()
     del serverSocket

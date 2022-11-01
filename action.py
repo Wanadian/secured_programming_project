@@ -2,8 +2,10 @@
 # _*_ coding: utf8 _*_
 
 import os
+import signal
 from multiprocessing import shared_memory
 from builtins import OSError
+from contextlib import contextmanager
 
 
 def freeCommunicationSystem(sharedMemoryName, pathTube1, pathTube2):
@@ -41,3 +43,6 @@ def createdSharedMemory(name, create, size):
 def fillSharedMemory(sharedMemory, data):
     sharedMemory.buf[:len(data)] = data
 
+
+def raiseTimeoutError(signum, frame):
+    raise TimeoutError
