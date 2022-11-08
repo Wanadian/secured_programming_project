@@ -2,14 +2,12 @@
 # _*_ coding: utf8 _*_
 
 import os
-import random
-import signal
 import socket
 import sys
 import time
 from threading import Thread
 
-from action import createdSharedMemory, createTubes, freeCommunicationSystem, raiseTimeoutError, terminateChildren
+from action import createdSharedMemory, createTubes, freeCommunicationSystem, terminateChildren
 from primaryServer import primaryServerBehavior
 from secondaryServer import secondaryServerBehavior
 
@@ -61,7 +59,7 @@ def launchPrimaryServer(sharedMemoryName, pathTube1, pathTube2, host, port):
         linkToWatchDogThread.join()
         sys.exit(os.EX_OK)
     else:
-        openWatchDogConnectionThread = Thread(target=openWatchDogConnection, args=(sharedMemoryName, pathTube1, pathTube2, host, port))
+        openWatchDogConnectionThread = Thread(target=openWatchDogConnection, args=(host, port))
         openWatchDogConnectionThread.start()
 
 
@@ -80,11 +78,11 @@ def launchSecondaryServer(sharedMemoryName, pathTube1, pathTube2, host, port):
         linkToWatchDogThread.join()
         sys.exit(os.EX_OK)
     else:
-        openWatchDogConnectionThread = Thread(target=openWatchDogConnection, args=(sharedMemoryName, pathTube1, pathTube2, host, port))
+        openWatchDogConnectionThread = Thread(target=openWatchDogConnection, args=(host, port))
         openWatchDogConnectionThread.start()
 
 
-def openWatchDogConnection(sharedMemoryName, pathTube1, pathTube2, host, port):
+def openWatchDogConnection(host, port):
     watchDogSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     counter = 0
 
@@ -101,7 +99,6 @@ def openWatchDogConnection(sharedMemoryName, pathTube1, pathTube2, host, port):
     print('WD> Connexion with server established\n')
 
     while True:
-
         if counter < 5:
             print("WD> Are you alive ?")
             connexion.send(bytes('Are you alive ?', 'UTF-8'))
@@ -109,9 +106,8 @@ def openWatchDogConnection(sharedMemoryName, pathTube1, pathTube2, host, port):
         else:
             print("WD> EXIT")
             connexion.send(bytes('EXIT', 'UTF-8'))
-
         connexion.recv(1024).decode('UTF-8')
-        time.sleep(2)
+        time.sleep(5)
         counter += 1
 
     print('WD> Connexion with server closed\n')
@@ -131,8 +127,7 @@ def linkToWatchDog(host, port):
             break
         except socket.error:
             if attempt >= 5:
-                print("Server> Connexion to watch dog failed\n")
-                sys.exit()
+                sys.exit("Connexion to watch dog failed")
             time.sleep(5)
     print("Server> Connexion with watch dog established\n")
 
@@ -143,7 +138,7 @@ def linkToWatchDog(host, port):
             break
         print("server> Still alive !")
         serverSocket.send(bytes('Still alive !', 'UTF-8'))
-        time.sleep(random.randint(2, 6))
 
     serverSocket.close()
     del serverSocket
+    sys.exit(os.EX_OK)
