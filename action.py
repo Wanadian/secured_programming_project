@@ -2,10 +2,8 @@
 # _*_ coding: utf8 _*_
 
 import os
-import signal
-from multiprocessing import shared_memory
+from multiprocessing import shared_memory, active_children
 from builtins import OSError
-from contextlib import contextmanager
 
 
 def freeCommunicationSystem(sharedMemoryName, pathTube1, pathTube2):
@@ -46,3 +44,11 @@ def fillSharedMemory(sharedMemory, data):
 
 def raiseTimeoutError(signum, frame):
     raise TimeoutError
+
+
+def terminateChildren():
+    activeChildren = active_children()
+    for child in activeChildren:
+        child.terminate()
+    print("All child processe(s) terminated")
+    return activeChildren

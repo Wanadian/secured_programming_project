@@ -2,12 +2,14 @@
 # _*_ coding: utf8 _*_
 
 import os
+import random
 import signal
 import socket
 import sys
 import time
+from threading import Thread
 
-from action import createdSharedMemory, createTubes, freeCommunicationSystem, raiseTimeoutError
+from action import createdSharedMemory, createTubes, freeCommunicationSystem, raiseTimeoutError, terminateChildren
 from primaryServer import primaryServerBehavior
 from secondaryServer import secondaryServerBehavior
 
@@ -34,9 +36,14 @@ def launchWatchDog():
 
     os.wait()
 
+    print("Terminating children")
+    activeChildren = terminateChildren()
+    for child in activeChildren:
+        child.join()
+
     print("WD> Freeing communication systems")
     freeCommunicationSystem(name, pathTube1, pathTube2)
-    sys.exit(0)
+    sys.exit(os.EX_OK)
 
 
 def launchPrimaryServer(sharedMemoryName, pathTube1, pathTube2, host, port):
@@ -46,15 +53,16 @@ def launchPrimaryServer(sharedMemoryName, pathTube1, pathTube2, host, port):
         print("WD> Fork failed\n")
         os.abort()
     elif newPid == 0:
-        linkToWatchDog(host, port)
-        primaryServerBehavior(sharedMemoryName, pathTube1, pathTube2)
-        sys.exit(0)
+        linkToWatchDogThread = Thread(target=linkToWatchDog, args=(host, port))
+        linkToWatchDogThread.start()
+        primaryServerBehaviorThread = Thread(target=primaryServerBehavior, args=(sharedMemoryName, pathTube1, pathTube2))
+        primaryServerBehaviorThread.start()
+        primaryServerBehaviorThread.join()
+        linkToWatchDogThread.join()
+        sys.exit(os.EX_OK)
     else:
-        try:
-            openWatchDogConnection(host, port)
-        except ConnectionError:
-            print("Connexion with primary server aborted")
-            exit(-1)
+        openWatchDogConnectionThread = Thread(target=openWatchDogConnection, args=(sharedMemoryName, pathTube1, pathTube2, host, port))
+        openWatchDogConnectionThread.start()
 
 
 def launchSecondaryServer(sharedMemoryName, pathTube1, pathTube2, host, port):
@@ -64,45 +72,56 @@ def launchSecondaryServer(sharedMemoryName, pathTube1, pathTube2, host, port):
         print("WD> Fork failed\n")
         os.abort()
     elif newPid == 0:
-        linkToWatchDog(host, port)
-        secondaryServerBehavior(sharedMemoryName, pathTube1, pathTube2)
-        sys.exit(0)
+        linkToWatchDogThread = Thread(target=linkToWatchDog, args=(host, port))
+        linkToWatchDogThread.start()
+        secondaryServerBehaviorThread = Thread(target=secondaryServerBehavior, args=(sharedMemoryName, pathTube1, pathTube2))
+        secondaryServerBehaviorThread.start()
+        secondaryServerBehaviorThread.join()
+        linkToWatchDogThread.join()
+        sys.exit(os.EX_OK)
     else:
-        openWatchDogConnection(host, port)
+        openWatchDogConnectionThread = Thread(target=openWatchDogConnection, args=(sharedMemoryName, pathTube1, pathTube2, host, port))
+        openWatchDogConnectionThread.start()
 
 
-def openWatchDogConnection(host, port):
+def openWatchDogConnection(sharedMemoryName, pathTube1, pathTube2, host, port):
     watchDogSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
         watchDogSocket.bind((host, port))
     except socket.error:
-        print('WD> Could not initialise connexion\n')
+        print('WD> Could not initialise connexion on port ', port)
         sys.exit()
 
-    print('WD> Ready\n')
+    print('WD> Ready on port ', port)
     watchDogSocket.listen(2)
 
     connexion, address = watchDogSocket.accept()
     print('WD> Connexion with server established\n')
 
-    while True:
-        connexion.send(bytes('Are you alive ?', 'UTF-8'))
+    try:
+        while True:
+            print("WD> Are you alive ?")
+            connexion.send(bytes('Are you alive ?', 'UTF-8'))
 
-        signal.signal(signal.SIGALRM, raiseTimeoutError)
-        signal.alarm(5)
-        try:
-            messageRecieved = connexion.recv(1024).decode('UTF-8')
-            print('Server> ' + messageRecieved + "\n")
-        except TimeoutError:
-            print("WD> Action timeout")
-            connexion.send(bytes('EXIT', 'UTF-8'))
-            raise ConnectionError
-            break
-        finally:
-            signal.signal(signal.SIGALRM, signal.SIG_IGN)
-
-        time.sleep(2)
+            signal.signal(signal.SIGALRM, raiseTimeoutError)
+            signal.alarm(3)
+            try:
+                connexion.recv(1024).decode('UTF-8')
+            except TimeoutError:
+                print("WD> Action timeout")
+                connexion.send(bytes('EXIT', 'UTF-8'))
+                raise ConnectionError
+            finally:
+                signal.signal(signal.SIGALRM, signal.SIG_IGN)
+            time.sleep(2)
+    except ConnectionError:
+        print("Connexion with primary server aborted")
+        freeCommunicationSystem(sharedMemoryName, pathTube1, pathTube2)
+        activeChildren = terminateChildren()
+        for child in activeChildren:
+            child.join()
+        sys.exit(" A failure might have occurred : Secondary server did not respond in time")
 
     print('WD> Connexion with server closed\n')
     connexion.close()
@@ -113,7 +132,6 @@ def openWatchDogConnection(host, port):
 
 def linkToWatchDog(host, port):
     attempt = 0
-    cpt = 0
     serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     while attempt < 5:
         try:
@@ -132,13 +150,9 @@ def linkToWatchDog(host, port):
         if messageRecieved.upper() == "EXIT":
             print("Server> Receiving EXIT code, stopping process\n")
             break
-        print("WD> " + messageRecieved + "\n")
-        if cpt < 5:
-            serverSocket.send(bytes('Still alive !', 'UTF-8'))
-        else:
-            print("server> sleeping : no message sent")
-            time.sleep(10)
-        cpt += 1
+        print("server> Still alive !")
+        serverSocket.send(bytes('Still alive !', 'UTF-8'))
+        time.sleep(random.randint(2, 6))
 
     serverSocket.close()
     del serverSocket
