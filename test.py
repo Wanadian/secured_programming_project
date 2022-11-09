@@ -1,6 +1,4 @@
-import os
 import signal
-import subprocess
 import time
 from threading import Thread
 

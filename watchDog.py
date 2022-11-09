@@ -1,3 +1,4 @@
+# CARLIER Amandine et DENORME William
 #! /usr/bin/env python3
 # _*_ coding: utf8 _*_
 
@@ -14,8 +15,8 @@ from secondaryServer import secondaryServerBehavior
 
 def launchWatchDog():
     host = '127.0.0.1'
-    primaryServerPort = 1111
-    secondaryServerPort = 2222
+    primaryServerPort = 12345
+    secondaryServerPort = 54321
 
     pathTube1 = "/tmp/tubenommeprincipalsecond.fifo"
     pathTube2 = "/tmp/tubenommesecondprincipal.fifo"
@@ -30,9 +31,8 @@ def launchWatchDog():
     createTubes(pathTube1, pathTube2)
 
     openWatchDogConnectionThread1 = Thread(target=openWatchDogConnection, name="watchDogSP", args=(host, primaryServerPort))
-    openWatchDogConnectionThread1.start()
-
     openWatchDogConnectionThread2 = Thread(target=openWatchDogConnection, name="watchDogSS", args=(host, secondaryServerPort))
+    openWatchDogConnectionThread1.start()
     openWatchDogConnectionThread2.start()
 
     launchPrimaryServer(sharedMemory.name, pathTube1, pathTube2, host, primaryServerPort)
@@ -59,14 +59,12 @@ def launchPrimaryServer(sharedMemoryName, pathTube1, pathTube2, host, port):
         os.abort()
     elif newPid == 0:
         linkToWatchDogThread = Thread(target=linkToWatchDog, name="linkSPToWatchDog", args=(host, port))
-        primaryServerBehaviorThread = Thread(target=primaryServerBehavior,args=(sharedMemoryName, pathTube1, pathTube2))
+        primaryServerBehaviorThread = Thread(target=primaryServerBehavior, args=(sharedMemoryName, pathTube1, pathTube2))
         linkToWatchDogThread.start()
         primaryServerBehaviorThread.start()
         primaryServerBehaviorThread.join()
         linkToWatchDogThread.join()
         sys.exit(os.EX_OK)
-
-
 
 
 def launchSecondaryServer(sharedMemoryName, pathTube1, pathTube2, host, port):
@@ -77,7 +75,7 @@ def launchSecondaryServer(sharedMemoryName, pathTube1, pathTube2, host, port):
         os.abort()
     elif newPid == 0:
         linkToWatchDogThread = Thread(target=linkToWatchDog, name="linkSSToWatchDog", args=(host, port))
-        secondaryServerBehaviorThread = Thread(target=secondaryServerBehavior,args=(sharedMemoryName, pathTube1, pathTube2))
+        secondaryServerBehaviorThread = Thread(target=secondaryServerBehavior, args=(sharedMemoryName, pathTube1, pathTube2))
         linkToWatchDogThread.start()
         secondaryServerBehaviorThread.start()
         secondaryServerBehaviorThread.join()
@@ -92,6 +90,7 @@ def openWatchDogConnection(host, port):
         watchDogSocket.bind((host, port))
     except socket.error:
         print('WD> Could not initialise connexion on port ', port)
+        watchDogSocket.close()
         sys.exit("Watch dog could not initialise connexion")
 
     print('WD> Ready on port ', port)
@@ -129,6 +128,7 @@ def linkToWatchDog(host, port):
             break
         except socket.error:
             if attempt >= 5:
+                serverSocket.close()
                 sys.exit("Connexion to watch dog failed")
             time.sleep(5)
     print("Server> Connexion with watch dog established\n")

@@ -28,6 +28,8 @@ try:
 
 ![img.png](img.png)
 
+![img_3.png](img_3.png)
+
 ---
 ## Équipe de travail
 
@@ -45,7 +47,7 @@ Le projet est une application console qui peut être lancée en ligne de command
 
 L'initialisation des données et la mise en oeuvre de l'ensemble de la structure se fait place lors du début du lancement de l'application. En effet, lors du lancement nous allons créer automatiquement le WatchDog, ainsi que les deux serveurs (principal et secondaire).
 
-Pour ce qui est de l'arrêt du projet, il s'arrête soit automatiquement si une anomalie est détecté par le Watcchdog, soit manuellement (au bout de 5 itérations) de façon à arrêter proprement l'esnemble des dispositifs réalisés.
+* Pour ce qui est de l'arrêt du projet, il s'arrête soit automatiquement si une anomalie est détectée par le Watcchdog, soit manuellement (au bout de 5 itérations) de façon à arrêter proprement l'esnemble des dispositifs réalisés.
 
 ---
 ## Spécificités présentes
@@ -89,7 +91,7 @@ Ensuite, une fois cela compris, nous avons pu facilement lancer les divers exemp
 
 Vient alors la réalisation des interactions par socket. Ici encore, nous avons rencontré différents obstacles, tel que la non surveillance simultanée des serveurs principal et secondaire par le watchdog. Pour essayer de contrer cela, nous avons implémenté des threads, threads qui n'a pas été simple à gérer au vu du nombre important de communication en même temps.
 
-Client ??
+* Client ??
 
 ---
 ## Diagramme de séquence

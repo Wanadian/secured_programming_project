@@ -1,7 +1,9 @@
+# CARLIER Amandine et DENORME William
 #! /usr/bin/env python3
 # _*_ coding: utf8 _*_
 
 import os
+import time
 from multiprocessing import shared_memory
 
 from action import fillSharedMemory
@@ -12,7 +14,6 @@ def primaryServerBehavior(sharedMemoryName, pathTube1, pathTube2):
     sharedMemoryPrimaryServer = shared_memory.SharedMemory(sharedMemoryName)
     fillSharedMemory(sharedMemoryPrimaryServer, data)
     communicationWithSecondaryServer(pathTube1, pathTube2)
-    sharedMemoryPrimaryServer.close()
 
 
 def communicationWithSecondaryServer(pathTube1, pathTube2):
@@ -31,6 +32,5 @@ def communicationWithSecondaryServer(pathTube1, pathTube2):
 
         fifo1.close()
         fifo2.close()
-        os.execlp("ipcs", "ipcs", "-m")
     except OSError as error:
         print("An error occured in fonction communicationWithSecondaryServer in file action:", error)

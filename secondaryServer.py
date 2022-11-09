@@ -1,3 +1,4 @@
+# CARLIER Amandine et DENORME William
 #! /usr/bin/env python3
 # _*_ coding: utf8 _*_
 
@@ -9,7 +10,6 @@ def secondaryServerBehavior(sharedMemoryName, pathTube1, pathTube2):
     sharedMemorySecondaryServer = shared_memory.SharedMemory(sharedMemoryName)
     communicationWithPrimaryServer(pathTube1, pathTube2)
     sharedMemorySecondaryServer.close()
-    sys.exit(0)
 
 
 def communicationWithPrimaryServer(pathTube1, pathTube2):
