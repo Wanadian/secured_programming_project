@@ -91,6 +91,8 @@ Ensuite, une fois cela compris, nous avons pu facilement lancer les divers exemp
 
 Vient alors la réalisation des interactions par socket. Ici encore, nous avons rencontré différents obstacles, tel que la non surveillance simultanée des serveurs principal et secondaire par le watchdog. Pour essayer de contrer cela, nous avons implémenté des threads, threads qui n'a pas été simple à gérer au vu du nombre important de communication en même temps.
 
+Aussi, comme attendu, nous avons eu aussi des problèmes avec la commande "execlp". En effet, une erreur de libération du segment mémoire survient, par conséquent nous avons fait le choi de supprimer cette commande. Malheureusement, nous avons manqué de temps pour revenir sur cette erreur".
+
 * Client ??
 
 ---

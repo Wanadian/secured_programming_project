@@ -1,4 +1,3 @@
-# CARLIER Amandine et DENORME William
 #! /usr/bin/env python3
 # _*_ coding: utf8 _*_
 
@@ -15,8 +14,8 @@ from secondaryServer import secondaryServerBehavior
 
 def launchWatchDog():
     host = '127.0.0.1'
-    primaryServerPort = 12345
-    secondaryServerPort = 54321
+    primaryServerPort = 1111
+    secondaryServerPort = 2222
 
     pathTube1 = "/tmp/tubenommeprincipalsecond.fifo"
     pathTube2 = "/tmp/tubenommesecondprincipal.fifo"
