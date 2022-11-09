@@ -6,15 +6,15 @@ import socket
 import sys
 import time
 from threading import Thread
-from action import createdSharedMemory, createTubes, freeCommunicationSystem, terminateChildren
-from primaryServer import primaryServerBehavior
-from secondaryServer import secondaryServerBehavior
+from server.action import createdSharedMemory, createTubes, freeCommunicationSystem, terminateChildren
+from server.primary_server.primaryServer import primaryServerBehavior
+from server.secondary_server.secondaryServer import secondaryServerBehavior
 
 
 def launchWatchDog():
     host = '127.0.0.1'
-    primaryServerPort = 11112
-    secondaryServerPort = 22221
+    primaryServerPort = 1122
+    secondaryServerPort = 2211
 
     pathTube1 = "/tmp/tubenommeprincipalsecond.fifo"
     pathTube2 = "/tmp/tubenommesecondprincipal.fifo"
@@ -28,16 +28,16 @@ def launchWatchDog():
     sharedMemory = createdSharedMemory(name, create, size)
     createTubes(pathTube1, pathTube2)
 
-    openWatchDogConnectionThread1 = Thread(target=openWatchDogConnection, name="watchDogSP", args=(host, primaryServerPort))
-    openWatchDogConnectionThread2 = Thread(target=openWatchDogConnection, name="watchDogSS", args=(host, secondaryServerPort))
-    openWatchDogConnectionThread1.start()
-    openWatchDogConnectionThread2.start()
+    # openWatchDogConnectionThread1 = Thread(target=openWatchDogConnection, name="watchDogSP", args=(host, primaryServerPort))
+    # openWatchDogConnectionThread2 = Thread(target=openWatchDogConnection, name="watchDogSS", args=(host, secondaryServerPort))
+    # openWatchDogConnectionThread1.start()
+    # openWatchDogConnectionThread2.start()
 
     launchPrimaryServer(sharedMemory.name, pathTube1, pathTube2, host, primaryServerPort)
     launchSecondaryServer(sharedMemory.name, pathTube1, pathTube2, host, secondaryServerPort)
 
-    openWatchDogConnectionThread1.join()
-    openWatchDogConnectionThread2.join()
+    # openWatchDogConnectionThread1.join()
+    # openWatchDogConnectionThread2.join()
 
     os.wait()
 
@@ -58,12 +58,12 @@ def launchPrimaryServer(sharedMemoryName, pathTube1, pathTube2, host, port):
         print("WD> Fork failed\n")
         os.abort()
     elif newPid == 0:
-        linkToWatchDogThread = Thread(target=linkToWatchDog, name="linkSPToWatchDog", args=(host, port))
+        # linkToWatchDogThread = Thread(target=linkToWatchDog, name="linkSPToWatchDog", args=(host, port))
         primaryServerBehaviorThread = Thread(target=primaryServerBehavior, args=(sharedMemoryName, pathTube1, pathTube2))
-        linkToWatchDogThread.start()
+        # linkToWatchDogThread.start()
         primaryServerBehaviorThread.start()
         primaryServerBehaviorThread.join()
-        linkToWatchDogThread.join()
+        # linkToWatchDogThread.join()
         sys.exit(os.EX_OK)
 
 
@@ -74,24 +74,30 @@ def launchSecondaryServer(sharedMemoryName, pathTube1, pathTube2, host, port):
         print("WD> Fork failed\n")
         os.abort()
     elif newPid == 0:
-        linkToWatchDogThread = Thread(target=linkToWatchDog, name="linkSSToWatchDog", args=(host, port))
+        # linkToWatchDogThread = Thread(target=linkToWatchDog, name="linkSSToWatchDog", args=(host, port))
         secondaryServerBehaviorThread = Thread(target=secondaryServerBehavior, args=(sharedMemoryName, pathTube1, pathTube2))
-        linkToWatchDogThread.start()
+        # linkToWatchDogThread.start()
         secondaryServerBehaviorThread.start()
         secondaryServerBehaviorThread.join()
-        linkToWatchDogThread.join()
+        # linkToWatchDogThread.join()
         sys.exit(os.EX_OK)
 
 
 def openWatchDogConnection(host, port):
     watchDogSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     counter = 0
-    try:
-        watchDogSocket.bind((host, port))
-    except socket.error:
-        print('WD> Could not initialise connexion on port ', port)
-        watchDogSocket.close()
-        sys.exit("Watch dog could not initialise connexion")
+    attempt = 0
+    while attempt < 5:
+        try:
+            attempt += 1
+            watchDogSocket.bind((host, port))
+            break
+        except socket.error:
+            watchDogSocket.close()
+            if attempt >= 5:
+                print('WD> Could not initialise connexion on port ', port)
+                sys.exit("Watch dog could not initialise connexion")
+            time.sleep(1)
 
     print('WD> Ready on port ', port)
     watchDogSocket.listen(1)
