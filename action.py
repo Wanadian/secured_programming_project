@@ -6,29 +6,12 @@ from multiprocessing import shared_memory, active_children
 from builtins import OSError
 
 
-def freeCommunicationSystem(sharedMemoryName, pathTube1, pathTube2):
-    try:
-        os.unlink(pathTube1)
-    except OSError as error:
-        print("Warning:", error)
-    try:
-        os.unlink(pathTube2)
-    except OSError as error:
-        print("Warning:", error)
-    try:
-        sharedMemoryToDelete = shared_memory.SharedMemory(sharedMemoryName)
-        sharedMemoryToDelete.unlink()
-    except OSError as error:
-        print("Warning:", error)
-
-
-
 def createTubes(pathTube1, pathTube2):
     try:
         os.mkfifo(pathTube1, 0o0600)
         os.mkfifo(pathTube2, 0o0600)
     except OSError as error:
-        print("An error occured in fonction createTubes in file action:", error)
+        print("An error has occured in fonction createTubes in file action:", error)
 
 
 def createdSharedMemory(name, create, size):
@@ -44,6 +27,22 @@ def fillSharedMemory(sharedMemory, data):
 
 def raiseTimeoutError(signum, frame):
     raise TimeoutError
+
+
+def freeCommunicationSystem(sharedMemoryName, pathTube1, pathTube2):
+    try:
+        os.unlink(pathTube1)
+    except OSError as error:
+        print("Warning:", error)
+    try:
+        os.unlink(pathTube2)
+    except OSError as error:
+        print("Warning:", error)
+    try:
+        sharedMemoryToDelete = shared_memory.SharedMemory(sharedMemoryName)
+        sharedMemoryToDelete.unlink()
+    except OSError as error:
+        print("Warning:", error)
 
 
 def terminateChildren():

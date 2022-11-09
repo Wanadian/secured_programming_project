@@ -6,7 +6,6 @@ import socket
 import sys
 import time
 from threading import Thread
-
 from action import createdSharedMemory, createTubes, freeCommunicationSystem, terminateChildren
 from primaryServer import primaryServerBehavior
 from secondaryServer import secondaryServerBehavior
@@ -14,8 +13,8 @@ from secondaryServer import secondaryServerBehavior
 
 def launchWatchDog():
     host = '127.0.0.1'
-    primaryServerPort = 1111
-    secondaryServerPort = 2222
+    primaryServerPort = 11112
+    secondaryServerPort = 22221
 
     pathTube1 = "/tmp/tubenommeprincipalsecond.fifo"
     pathTube2 = "/tmp/tubenommesecondprincipal.fifo"
@@ -39,6 +38,8 @@ def launchWatchDog():
 
     openWatchDogConnectionThread1.join()
     openWatchDogConnectionThread2.join()
+
+    os.wait()
 
     print("Terminating children")
     activeChildren = terminateChildren()

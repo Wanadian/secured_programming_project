@@ -1,17 +1,13 @@
 #! /usr/bin/env python3
 # _*_ coding: utf8 _*_
 
-import os
-import time
 from multiprocessing import shared_memory
-
 from action import fillSharedMemory
 
 
 def primaryServerBehavior(sharedMemoryName, pathTube1, pathTube2):
-    data = bytearray([74, 73, 72, 71, 70, 69, 68, 67, 66, 65])
     sharedMemoryPrimaryServer = shared_memory.SharedMemory(sharedMemoryName)
-    fillSharedMemory(sharedMemoryPrimaryServer, data)
+    fillSharedMemory(sharedMemoryPrimaryServer, bytearray([74, 73, 72, 71, 70, 69, 68, 67, 66, 65]))
     communicationWithSecondaryServer(pathTube1, pathTube2)
 
 
