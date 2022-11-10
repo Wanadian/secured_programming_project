@@ -40,19 +40,26 @@ def primaryServerBehavior(sharedMemoryName, pathTube1, pathTube2):
     print('SP> Connexion with server established\n')
 
     while True:
-        print("PS> Message recieved from client")
         messageRecieved = connexion.recv(1024).decode('UTF-8')
-        emptySharedMemory(sharedMemoryPrimaryServer)
-        fillSharedMemory(sharedMemoryPrimaryServer, bytes(messageRecieved, 'UTF-8'))
-        fifo1.write("Need an answer\n")
-        fifo1.flush()
-        line = fifo2.readline()
-        if line == "shutdown":
+        if messageRecieved == "ping":
+            print("PS> Ping received from a client")
+            emptySharedMemory(sharedMemoryPrimaryServer)
+            fillSharedMemory(sharedMemoryPrimaryServer, bytes(str(address), 'UTF-8'))
+            fifo1.write("A client pinged\n")
+            fifo1.flush()
+            fifo2.readline()
+            connexion.send(bytes("ping", 'UTF-8'))
+            print("SP> Reply sent to client")
+        elif messageRecieved == "exit":
+            fifo1.write("exit\n")
+            fifo1.flush()
             break
-        else:
-            messageToSend = str(bytes(sharedMemoryPrimaryServer.buf), 'UTF-8')
-            connexion.send(bytes(messageToSend, 'UTF-8'))
-            print("SP> Message sent : ", messageToSend)
+
+    connexion.close()
+    serverSocket.close()
+    del serverSocket
+
+    print('SP> Connexion with client closed\n')
 
     sharedMemoryPrimaryServer.close()
 
@@ -62,9 +69,3 @@ def primaryServerBehavior(sharedMemoryName, pathTube1, pathTube2):
     except OSError as error:
         print(error, "\n")
         pass
-
-    print('SP> Connexion with client closed\n')
-    connexion.close()
-
-    serverSocket.close()
-    del serverSocket

@@ -3,8 +3,7 @@
 
 import sys
 from multiprocessing import shared_memory
-
-from server.action import fillSharedMemory, emptySharedMemory
+from datetime import datetime
 
 
 def secondaryServerBehavior(sharedMemoryName, pathTube1, pathTube2):
@@ -16,21 +15,19 @@ def secondaryServerBehavior(sharedMemoryName, pathTube1, pathTube2):
         print(error, "\n")
         sys.exit("An error has occured while communicating with secondary server : ")
 
+    logFile = open("./log.txt", 'w')
+
     while True:
-        fifo1.readline()
-        clientMessage = bytes(sharedMemorySecondaryServer.buf).decode('UTF-8')
-        print(clientMessage == "bye")
-        if clientMessage == "bye":
-            fifo2.write("shutdown\n")
-            fifo2.flush()
+        primaryServerMessage = fifo1.readline()
+        if primaryServerMessage == "exit\n":
             break
         else:
-            print(clientMessage == "hello")
-            emptySharedMemory(sharedMemorySecondaryServer)
-            fillSharedMemory(sharedMemorySecondaryServer, bytes("hello", 'UTF-8'))
-            fifo2.write("Answer sent\n")
+            clientAddress = bytes(sharedMemorySecondaryServer.buf).decode('UTF-8')
+            logFile.write(datetime.now().strftime("%d/%m/%Y %H:%M:%S") + ": ping from user " + clientAddress + "\n")
+            fifo2.write("ping registered\n")
             fifo2.flush()
 
+    logFile.close()
 
     sharedMemorySecondaryServer.close()
 

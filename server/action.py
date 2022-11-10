@@ -36,7 +36,7 @@ def fillSharedMemory(sharedMemory, data):
 
 
 def emptySharedMemory(sharedMemory):
-    buf = bytearray([0, 0, 0, 0, 0])
+    buf = bytearray([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
     buf[:sharedMemory.size] = buf
     sharedMemory.buf[:len(buf)] = buf
 

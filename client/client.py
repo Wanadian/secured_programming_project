@@ -24,11 +24,11 @@ def simulateClient():
 
     while True:
         if counter < 3:
-            print("Client> hello")
-            clientSocket.send(bytes("hello", 'UTF-8'))
+            print("Client> ping")
+            clientSocket.send(bytes("ping", 'UTF-8'))
         else:
-            print("Client> bye")
-            clientSocket.send(bytes("bye", 'UTF-8'))
+            print("Client> exit")
+            clientSocket.send(bytes("exit", 'UTF-8'))
             break
         messageRecieved = clientSocket.recv(1024).decode('UTF-8')
         print("Server> ", messageRecieved)
