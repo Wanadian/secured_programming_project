@@ -21,7 +21,8 @@ def createTubes(pathTube1, pathTube2):
             if attempt >= 5:
                 sys.exit("Could not create tubes")
 
-def createdSharedMemory(name, create, size):
+
+def createdSharedMemory(name, create):
     attempt = 0
     while attempt < 5:
         try:

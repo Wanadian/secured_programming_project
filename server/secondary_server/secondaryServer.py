@@ -15,7 +15,7 @@ def secondaryServerBehavior(sharedMemoryName, pathTube1, pathTube2):
         print(error, "\n")
         sys.exit("An error has occured while communicating with secondary server : ")
 
-    logFile = open("./log.txt", 'w')
+    logFile = open("./log.txt", 'a')
 
     while True:
         primaryServerMessage = fifo1.readline()

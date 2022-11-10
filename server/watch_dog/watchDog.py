@@ -13,19 +13,18 @@ from server.secondary_server.secondaryServer import secondaryServerBehavior
 
 def launchWatchDog():
     host = '127.0.0.1'
-    primaryServerPort = 112
-    secondaryServerPort = 221
+    primaryServerPort = 1111
+    secondaryServerPort = 2222
 
     pathTube1 = "/tmp/tubenommeprincipalsecond.fifo"
     pathTube2 = "/tmp/tubenommesecondprincipal.fifo"
 
     name = "leclerc"
     create = True
-    size = 10
 
     freeCommunicationSystem(name, pathTube1, pathTube2)
 
-    sharedMemory = createdSharedMemory(name, create, size)
+    sharedMemory = createdSharedMemory(name, create)
     createTubes(pathTube1, pathTube2)
 
     openWatchDogConnectionThread1 = Thread(target=openWatchDogConnection, name="watchDogSP", args=(host, primaryServerPort))
