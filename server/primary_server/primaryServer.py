@@ -5,7 +5,7 @@ import socket
 import sys
 import time
 from multiprocessing import shared_memory
-from server.action import fillSharedMemory, emptySharedMemory
+from server.action import fillSharedMemory
 
 
 def primaryServerBehavior(sharedMemoryName, pathTube1, pathTube2):
@@ -44,7 +44,6 @@ def primaryServerBehavior(sharedMemoryName, pathTube1, pathTube2):
         messageRecieved = connexion.recv(1024).decode('UTF-8')
         if messageRecieved == "ping":
             print("PS> Ping received from a client")
-            emptySharedMemory(sharedMemoryPrimaryServer)
             fillSharedMemory(sharedMemoryPrimaryServer, bytes(str(address), 'UTF-8'))
             fifo1.write("A client pinged\n")
             fifo1.flush()

@@ -26,7 +26,7 @@ def createdSharedMemory(name, create, size):
     while attempt < 5:
         try:
             attempt += 1
-            return shared_memory.SharedMemory(name, create, size)
+            return shared_memory.SharedMemory(name, create, sharedMemorySize)
         except (ValueError, FileExistsError, OSError):
             if attempt >= 5:
                 sys.exit("Could not create shared memory")
@@ -34,11 +34,6 @@ def createdSharedMemory(name, create, size):
 
 def fillSharedMemory(sharedMemory, data):
     sharedMemory.buf[:sharedMemorySize] = data
-
-
-def emptySharedMemory(sharedMemory):
-    arrayOfZero = bytearray([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
-    sharedMemory.buf[:sharedMemorySize] = arrayOfZero
 
 
 def freeCommunicationSystem(sharedMemoryName, pathTube1, pathTube2):
