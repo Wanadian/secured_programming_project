@@ -35,9 +35,9 @@ def fillSharedMemory(sharedMemory, data):
     sharedMemory.buf[:len(data)] = data
 
 
-def emptySharedMemory(sharedMemory):
-    arrayOfZero = bytearray([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
-    sharedMemory.buf[:len(arrayOfZero)] = arrayOfZero
+# def emptySharedMemory(sharedMemory):
+#     arrayOfZero = bytearray([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+#     sharedMemory.buf[:len(arrayOfZero)] = arrayOfZero
 
 
 def freeCommunicationSystem(sharedMemoryName, pathTube1, pathTube2):
