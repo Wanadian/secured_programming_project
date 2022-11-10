@@ -13,8 +13,8 @@ from server.secondary_server.secondaryServer import secondaryServerBehavior
 
 def launchWatchDog():
     host = '127.0.0.1'
-    primaryServerPort = 1122
-    secondaryServerPort = 2211
+    primaryServerPort = 112
+    secondaryServerPort = 221
 
     pathTube1 = "/tmp/tubenommeprincipalsecond.fifo"
     pathTube2 = "/tmp/tubenommesecondprincipal.fifo"
@@ -28,16 +28,16 @@ def launchWatchDog():
     sharedMemory = createdSharedMemory(name, create, size)
     createTubes(pathTube1, pathTube2)
 
-    # openWatchDogConnectionThread1 = Thread(target=openWatchDogConnection, name="watchDogSP", args=(host, primaryServerPort))
-    # openWatchDogConnectionThread2 = Thread(target=openWatchDogConnection, name="watchDogSS", args=(host, secondaryServerPort))
-    # openWatchDogConnectionThread1.start()
-    # openWatchDogConnectionThread2.start()
+    openWatchDogConnectionThread1 = Thread(target=openWatchDogConnection, name="watchDogSP", args=(host, primaryServerPort))
+    openWatchDogConnectionThread2 = Thread(target=openWatchDogConnection, name="watchDogSS", args=(host, secondaryServerPort))
+    openWatchDogConnectionThread1.start()
+    openWatchDogConnectionThread2.start()
 
     launchPrimaryServer(sharedMemory.name, pathTube1, pathTube2, host, primaryServerPort)
     launchSecondaryServer(sharedMemory.name, pathTube1, pathTube2, host, secondaryServerPort)
 
-    # openWatchDogConnectionThread1.join()
-    # openWatchDogConnectionThread2.join()
+    openWatchDogConnectionThread1.join()
+    openWatchDogConnectionThread2.join()
 
     os.wait()
 
@@ -58,12 +58,12 @@ def launchPrimaryServer(sharedMemoryName, pathTube1, pathTube2, host, port):
         print("WD> Fork failed\n")
         os.abort()
     elif newPid == 0:
-        # linkToWatchDogThread = Thread(target=linkToWatchDog, name="linkSPToWatchDog", args=(host, port))
+        linkToWatchDogThread = Thread(target=linkToWatchDog, name="linkSPToWatchDog", args=(host, port))
         primaryServerBehaviorThread = Thread(target=primaryServerBehavior, args=(sharedMemoryName, pathTube1, pathTube2))
-        # linkToWatchDogThread.start()
+        linkToWatchDogThread.start()
         primaryServerBehaviorThread.start()
         primaryServerBehaviorThread.join()
-        # linkToWatchDogThread.join()
+        linkToWatchDogThread.join()
         sys.exit(os.EX_OK)
 
 
@@ -74,12 +74,12 @@ def launchSecondaryServer(sharedMemoryName, pathTube1, pathTube2, host, port):
         print("WD> Fork failed\n")
         os.abort()
     elif newPid == 0:
-        # linkToWatchDogThread = Thread(target=linkToWatchDog, name="linkSSToWatchDog", args=(host, port))
+        linkToWatchDogThread = Thread(target=linkToWatchDog, name="linkSSToWatchDog", args=(host, port))
         secondaryServerBehaviorThread = Thread(target=secondaryServerBehavior, args=(sharedMemoryName, pathTube1, pathTube2))
-        # linkToWatchDogThread.start()
+        linkToWatchDogThread.start()
         secondaryServerBehaviorThread.start()
         secondaryServerBehaviorThread.join()
-        # linkToWatchDogThread.join()
+        linkToWatchDogThread.join()
         sys.exit(os.EX_OK)
 
 

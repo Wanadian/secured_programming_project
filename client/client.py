@@ -5,7 +5,7 @@ import time
 
 def simulateClient():
     host = '127.0.0.1'
-    port = 1224
+    port = 12245
     attempt = 0
     counter = 0
     clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -19,15 +19,15 @@ def simulateClient():
             if attempt >= 5:
                 clientSocket.close()
                 sys.exit("Connexion to server failed")
-            time.sleep(5)
-    print("Client> Connexion with server established\n")
+            time.sleep(2)
+    print("Connexion with server established\n")
 
     while True:
-        if counter < 5:
-            print("Client> Hello")
+        if counter < 3:
+            print("Client> hello")
             clientSocket.send(bytes("hello", 'UTF-8'))
         else:
-            print("Client> Bye")
+            print("Client> bye")
             clientSocket.send(bytes("bye", 'UTF-8'))
             break
         messageRecieved = clientSocket.recv(1024).decode('UTF-8')

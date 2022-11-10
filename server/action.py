@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 # _*_ coding: utf8 _*_
 
+import re
 import os
 import sys
 from multiprocessing import shared_memory, active_children
@@ -32,6 +33,12 @@ def createdSharedMemory(name, create, size):
 
 def fillSharedMemory(sharedMemory, data):
     sharedMemory.buf[:len(data)] = data
+
+
+def emptySharedMemory(sharedMemory):
+    buf = bytearray([0, 0, 0, 0, 0])
+    buf[:sharedMemory.size] = buf
+    sharedMemory.buf[:len(buf)] = buf
 
 
 def freeCommunicationSystem(sharedMemoryName, pathTube1, pathTube2):

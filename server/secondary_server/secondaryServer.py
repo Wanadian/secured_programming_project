@@ -1,9 +1,10 @@
 #! /usr/bin/env python3
 # _*_ coding: utf8 _*_
+
 import sys
 from multiprocessing import shared_memory
 
-from server.action import fillSharedMemory
+from server.action import fillSharedMemory, emptySharedMemory
 
 
 def secondaryServerBehavior(sharedMemoryName, pathTube1, pathTube2):
@@ -16,14 +17,16 @@ def secondaryServerBehavior(sharedMemoryName, pathTube1, pathTube2):
         sys.exit("An error has occured while communicating with secondary server : ")
 
     while True:
-        print('SS> Attente de réception de messages...\n')
         fifo1.readline()
-        clientMessage = str(bytes(sharedMemorySecondaryServer.buf), 'UTF-8')
+        clientMessage = bytes(sharedMemorySecondaryServer.buf).decode('UTF-8')
+        print(clientMessage == "bye")
         if clientMessage == "bye":
-            fifo2.write("shutdown")
+            fifo2.write("shutdown\n")
             fifo2.flush()
             break
         else:
+            print(clientMessage == "hello")
+            emptySharedMemory(sharedMemorySecondaryServer)
             fillSharedMemory(sharedMemorySecondaryServer, bytes("hello", 'UTF-8'))
             fifo2.write("Answer sent\n")
             fifo2.flush()

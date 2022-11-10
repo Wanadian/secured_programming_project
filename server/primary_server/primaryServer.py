@@ -1,15 +1,15 @@
 #! /usr/bin/env python3
 # _*_ coding: utf8 _*_
+
 import socket
 import sys
 import time
 from multiprocessing import shared_memory
-from server.action import fillSharedMemory
-
+from server.action import fillSharedMemory, emptySharedMemory
 
 def primaryServerBehavior(sharedMemoryName, pathTube1, pathTube2):
     host = '127.0.0.1'
-    port = 1224
+    port = 12245
     serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     attempt = 0
 
@@ -40,18 +40,17 @@ def primaryServerBehavior(sharedMemoryName, pathTube1, pathTube2):
     print('SP> Connexion with server established\n')
 
     while True:
+        print("PS> Message recieved from client")
         messageRecieved = connexion.recv(1024).decode('UTF-8')
+        emptySharedMemory(sharedMemoryPrimaryServer)
         fillSharedMemory(sharedMemoryPrimaryServer, bytes(messageRecieved, 'UTF-8'))
-        print('SP> Message received\n')
         fifo1.write("Need an answer\n")
         fifo1.flush()
         line = fifo2.readline()
         if line == "shutdown":
             break
         else:
-            print(str(bytes(sharedMemoryPrimaryServer.buf), 'UTF-8'))
             messageToSend = str(bytes(sharedMemoryPrimaryServer.buf), 'UTF-8')
-
             connexion.send(bytes(messageToSend, 'UTF-8'))
             print("SP> Message sent : ", messageToSend)
 
