@@ -1,11 +1,12 @@
 #! /usr/bin/env python3
 # _*_ coding: utf8 _*_
 
-import re
 import os
 import sys
 from multiprocessing import shared_memory, active_children
 from builtins import OSError
+
+sharedMemorySize = 20
 
 
 def createTubes(pathTube1, pathTube2):
@@ -32,12 +33,12 @@ def createdSharedMemory(name, create, size):
 
 
 def fillSharedMemory(sharedMemory, data):
-    sharedMemory.buf[:len(data)] = data
+    sharedMemory.buf[:sharedMemorySize] = data
 
 
-# def emptySharedMemory(sharedMemory):
-#     arrayOfZero = bytearray([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
-#     sharedMemory.buf[:len(arrayOfZero)] = arrayOfZero
+def emptySharedMemory(sharedMemory):
+    arrayOfZero = bytearray([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+    sharedMemory.buf[:sharedMemorySize] = arrayOfZero
 
 
 def freeCommunicationSystem(sharedMemoryName, pathTube1, pathTube2):
