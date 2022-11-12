@@ -15,9 +15,17 @@ Le projet est une application console qui peut être lancée en ligne de command
 
     python3 ./launcher.py
 
+Et 
+
+    python3 ./client_launcher.py
+
 L'initialisation des données et la mise en oeuvre de l'ensemble de la structure se fait place lors du début du lancement de l'application. En effet, lors du lancement nous allons créer automatiquement le WatchDog, ainsi que les deux serveurs (principal et secondaire).
 
-Pour ce qui est de l'arrêt du projet, il s'arrête soit automatiquement si une anomalie est détectée par le Watcchdog, soit quand tous les serveurs sont arrêtés de façon à stopper proprement l'esnemble des dispositifs réalisés.
+Pour ce qui est de l'arrêt du projet, il s'arrête soit automatiquement si une anomalie est détectée par le Watchdog, soit quand tous les serveurs sont arrêtés de façon à stopper proprement l'esnemble des dispositifs réalisés.
+
+Attention, pour que le projet se lance correctement, il est nécessaire d'utiliser la version 3.10 de python.
+
+Aussi, si vous devez relancer plusieurs fois le projet, il se peut que des problèmes de ports se présentent. Ainsi, pour régler ce problème, il vous suffit de changer les ports se situant dans le fichier du watchdog, de même que dans le client et dans le serveur principal (ces deux derniers ports doivent être identiques). Nous ne savons hélas pas pourquoi ce problème se produit, car il arrive sous machine distante WSL et non sous MAC. Malgré notre acharnement, nous n'avons pas réussi à déceler d'où pouvait provenir ce problème.
 
 ---
 ## Spécificités présentes
@@ -63,7 +71,7 @@ Vient alors la réalisation des interactions par socket. Ici encore, nous avons 
 
 Aussi, comme attendu, nous avons eu aussi des problèmes avec la commande "execlp". En effet, une erreur de libération du segment mémoire survient, par conséquent nous avons fait le choi de supprimer cette commande. Malheureusement, nous avons manqué de temps pour revenir sur cette erreur".
 
-De plus, lors de la mise en place du client, nous avons rencontré des problèmes au niveau de la transmition d'information dans la shared memory. En effet, une fois qu'une chaîne de caractère était mise de la shared memory, il était impossible de la comparer avec une autre chaîne de caractère classique, sûrement suite à un changement que nous ne voyons pas.
+De plus, lors de la mise en place du client, nous avons rencontré des problèmes au niveau de la transmission d'informations dans la shared memory. En effet, une fois qu'une chaîne de caractères était mise dans la shared memory, il était impossible de la comparer avec une autre chaîne de caractères classique, sûrement suite à un changement que nous ne voyons pas.
 
 ---
 ## Diagramme de séquence
