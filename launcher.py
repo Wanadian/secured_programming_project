@@ -1,3 +1,3 @@
-from server.watch_dog.watchDog import launchWatchDog
+from server.watch_dog.watch_dog import launch_watch_dog
 
-launchWatchDog()
+launch_watch_dog()

@@ -1,3 +1,3 @@
-from client.client import simulateClient
+from client.client import simulate_client
 
-simulateClient()
+simulate_client()
