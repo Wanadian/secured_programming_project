@@ -12,6 +12,7 @@ def simulate_client():
 
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
+    time.sleep(2)
     try:
         client_socket.connect((server_host, server_port))
     except socket.error:

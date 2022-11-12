@@ -123,6 +123,8 @@ def open_watch_dog_connection(host, port):
 
 def link_to_watch_dog(host, port):
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    time.sleep(2)
     try:
         server_socket.connect((host, port))
     except socket.error:

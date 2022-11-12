@@ -1,35 +1,5 @@
 # Projet OSPS
 
-timeout :
-```
-try:
-        while True:
-            print("WD> Are you alive ?")
-            connexion.send(bytes('Are you alive ?', 'UTF-8'))
-            signal.signal(signal.SIGALRM, raiseTimeoutError)
-            signal.alarm(3)
-            try:
-                connexion.recv(1024).decode('UTF-8')
-            except TimeoutError:
-                print("WD> Action timeout")
-                connexion.send(bytes('EXIT', 'UTF-8'))
-                raise ConnectionError
-            finally:
-                signal.signal(signal.SIGALRM, signal.SIG_IGN)
-            time.sleep(2)
-    except ConnectionError:
-        print("Connexion with primary server aborted")
-        freeCommunicationSystem(sharedMemoryName, pathTube1, pathTube2)
-        activeChildren = terminateChildren()
-        for child in activeChildren:
-            child.join()
-        sys.exit(" A failure might have occurred : Secondary server did not respond in time")
-```
-
-![img.png](img.png)
-
-![img_3.png](img_3.png)
-
 ---
 ## Équipe de travail
 
@@ -47,7 +17,7 @@ Le projet est une application console qui peut être lancée en ligne de command
 
 L'initialisation des données et la mise en oeuvre de l'ensemble de la structure se fait place lors du début du lancement de l'application. En effet, lors du lancement nous allons créer automatiquement le WatchDog, ainsi que les deux serveurs (principal et secondaire).
 
-* Pour ce qui est de l'arrêt du projet, il s'arrête soit automatiquement si une anomalie est détectée par le Watcchdog, soit manuellement (au bout de 5 itérations) de façon à arrêter proprement l'esnemble des dispositifs réalisés.
+Pour ce qui est de l'arrêt du projet, il s'arrête soit automatiquement si une anomalie est détectée par le Watcchdog, soit quand tous les serveurs sont arrêtés de façon à stopper proprement l'esnemble des dispositifs réalisés.
 
 ---
 ## Spécificités présentes
@@ -93,7 +63,7 @@ Vient alors la réalisation des interactions par socket. Ici encore, nous avons 
 
 Aussi, comme attendu, nous avons eu aussi des problèmes avec la commande "execlp". En effet, une erreur de libération du segment mémoire survient, par conséquent nous avons fait le choi de supprimer cette commande. Malheureusement, nous avons manqué de temps pour revenir sur cette erreur".
 
-* Client ??
+De plus, lors de la mise en place du client, nous avons rencontré des problèmes au niveau de la transmition d'information dans la shared memory. En effet, une fois qu'une chaîne de caractère était mise de la shared memory, il était impossible de la comparer avec une autre chaîne de caractère classique, sûrement suite à un changement que nous ne voyons pas.
 
 ---
 ## Diagramme de séquence
