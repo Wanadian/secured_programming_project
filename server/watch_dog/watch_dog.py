@@ -16,7 +16,7 @@ def launch_watch_dog():
 
     print("Booting ...")
     time.sleep(5)
-    
+
     host = '127.0.0.1'
     primary_server_port = 22222
     secondary_server_port = 33333
