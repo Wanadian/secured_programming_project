@@ -2,28 +2,26 @@ import socket
 import sys
 import time
 
+from server.action import delete_socket
+
 
 def simulate_client():
-    host = '127.0.0.1'
-    port = 12345
-    attempt = 0
+    server_host = '127.0.0.1'
+    server_port = 11111
     counter = 0
+
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-    while attempt < 5:
-        try:
-            attempt += 1
-            client_socket.connect((host, port))
-            break
-        except socket.error:
-            if attempt >= 5:
-                client_socket.close()
-                sys.exit("Connexion to server failed")
-            time.sleep(2)
-    print("Connexion with server established\n")
+    try:
+        client_socket.connect((server_host, server_port))
+    except socket.error:
+        delete_socket(client_socket)
+        sys.exit("Connexion to server failed")
+
+    print("Connexion with server established")
 
     while True:
-        if counter < 3:
+        if counter < 5:
             print("Client> ping")
             client_socket.send(bytes("ping", 'UTF-8'))
         else:
@@ -35,6 +33,8 @@ def simulate_client():
         time.sleep(2)
         counter += 1
 
-    client_socket.close()
-    del client_socket
+    delete_socket(client_socket)
     sys.exit("Simulation completed")
+
+
+

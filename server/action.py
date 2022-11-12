@@ -2,6 +2,7 @@
 # _*_ coding: utf8 _*_
 
 import os
+import socket
 import sys
 from multiprocessing import shared_memory, active_children
 from builtins import OSError
@@ -42,6 +43,11 @@ def free_communication_system(shared_memory_name, path_tube_1, path_tube_2):
         shared_memory_to_delete.unlink()
     except OSError as error:
         print("Warning : ", error)
+
+
+def delete_socket(socket_to_delete):
+    socket_to_delete.close()
+    del socket_to_delete
 
 
 def terminate_children():

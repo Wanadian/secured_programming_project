@@ -19,18 +19,22 @@ def secondary_server_behavior(shared_memory_name, path_tube_1, path_tube_2):
     while True:
         try:
             primary_server_message = fifo1.readline()
-        except OSError as error:
+        except BrokenPipeError as error:
             sys.exit("Tube not found" + error)
 
         if primary_server_message == "exit\n":
             break
         elif primary_server_message == "A client pinged\n":
-            client_address = bytes(shared_memory_secondary_server.buf).decode('UTF-8')
+            try:
+                client_address = bytes(shared_memory_secondary_server.buf).decode('UTF-8')
+            except BrokenPipeError as error:
+                sys.exit("Shared memory not found" + error)
+
             log_file.write(datetime.now().strftime("%d/%m/%Y %H:%M:%S") + ": ping from user " + client_address + "\n")
             try:
                 fifo2.write("ping registered\n")
                 fifo2.flush()
-            except OSError as error:
+            except BrokenPipeError as error:
                 sys.exit("Tube not found" + error)
 
     log_file.close()

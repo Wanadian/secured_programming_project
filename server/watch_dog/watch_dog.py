@@ -6,15 +6,16 @@ import socket
 import sys
 import time
 from threading import Thread
-from server.action import created_shared_memory, create_tubes, free_communication_system, terminate_children
+from server.action import created_shared_memory, create_tubes, free_communication_system, terminate_children, \
+    delete_socket
 from server.primary_server.primary_server import primary_server_behavior
 from server.secondary_server.secondary_server import secondary_server_behavior
 
 
 def launch_watch_dog():
     host = '127.0.0.1'
-    primary_server_port = 1111
-    secondary_server_port = 2222
+    primary_server_port = 22222
+    secondary_server_port = 33333
 
     path_tube1 = "/tmp/tubenommeprincipalsecond.fifo"
     path_tube2 = "/tmp/tubenommesecondprincipal.fifo"
@@ -89,12 +90,13 @@ def open_watch_dog_connection(host, port):
             watch_dog_socket.bind((host, port))
             break
         except socket.error:
-            watch_dog_socket.close()
-            del watch_dog_socket
-            watch_dog_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             if attempt >= 5:
+                delete_socket(watch_dog_socket)
                 print('Watch dog> Could not initialise connexion on port ', port)
-                sys.exit("Watch dog could not initialise connexion")
+                return
+            else:
+                delete_socket(watch_dog_socket)
+                watch_dog_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             time.sleep(1)
 
     print('Watch dog> Ready on port ', port)
@@ -114,34 +116,26 @@ def open_watch_dog_connection(host, port):
         time.sleep(2)
         counter += 1
 
-    print('Watch dog> Connexion with server closed\n')
+    print('Watch dog> Connexion with server closed')
     connexion.close()
-    watch_dog_socket.close()
-    del watch_dog_socket
+    delete_socket(watch_dog_socket)
 
 
 def link_to_watch_dog(host, port):
-    attempt = 0
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    while attempt < 5:
-        try:
-            attempt += 1
-            server_socket.connect((host, port))
-            break
-        except socket.error:
-            if attempt >= 5:
-                server_socket.close()
-                sys.exit("Connexion to watch dog failed")
-            time.sleep(5)
-    print("Server> Connexion with watch dog established\n")
+    try:
+        server_socket.connect((host, port))
+    except socket.error:
+        delete_socket(server_socket)
+        sys.exit("Connexion to watch dog failed")
+    print("Server> Connexion to watch dog established")
 
     while True:
         message_received = server_socket.recv(1024).decode('UTF-8')
         if message_received.upper() == "EXIT":
-            print("Server> Receiving EXIT code, stopping process\n")
+            print("Server> Receiving EXIT code, stopping process")
             break
         print("server> Still alive !")
         server_socket.send(bytes('Still alive !', 'UTF-8'))
 
-    server_socket.close()
-    del server_socket
+    delete_socket(server_socket)
