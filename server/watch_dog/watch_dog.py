@@ -40,12 +40,9 @@ def launch_watch_dog():
 
     os.wait()
 
-    print("Terminating children")
     active_children = terminate_children()
     for child in active_children:
         child.join()
-
-    print("WD> Freeing communication systems")
     free_communication_system(name, path_tube1, path_tube2)
     sys.exit(os.EX_OK)
 
@@ -93,6 +90,8 @@ def open_watch_dog_connection(host, port):
             break
         except socket.error:
             watch_dog_socket.close()
+            del watch_dog_socket
+            watch_dog_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             if attempt >= 5:
                 print('Watch dog> Could not initialise connexion on port ', port)
                 sys.exit("Watch dog could not initialise connexion")
@@ -117,7 +116,6 @@ def open_watch_dog_connection(host, port):
 
     print('Watch dog> Connexion with server closed\n')
     connexion.close()
-
     watch_dog_socket.close()
     del watch_dog_socket
 

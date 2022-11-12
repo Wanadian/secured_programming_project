@@ -11,7 +11,6 @@ from server.action import fill_shared_memory
 def primary_server_behavior(shared_memory_name, path_tube_1, path_tube_2):
     host = '127.0.0.1'
     port = 12345
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     attempt = 0
 
     shared_memory_primary_server = shared_memory.SharedMemory(shared_memory_name)
@@ -22,6 +21,8 @@ def primary_server_behavior(shared_memory_name, path_tube_1, path_tube_2):
         print(error, "\n")
         sys.exit("An error has occured while communicating with primary server : ")
 
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
     while attempt < 5:
         try:
             attempt += 1
@@ -29,6 +30,8 @@ def primary_server_behavior(shared_memory_name, path_tube_1, path_tube_2):
             break
         except socket.error:
             server_socket.close()
+            del server_socket
+            server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             if attempt >= 5:
                 print('Primary server> Could not initialise connexion on port ', port)
                 sys.exit("Server could not initialise connexion")
