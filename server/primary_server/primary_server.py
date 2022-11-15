@@ -2,7 +2,7 @@
 # _*_ coding: utf8 _*_
 
 import socket
-import sys
+import sys, os
 import time
 from multiprocessing import shared_memory
 from server.action import fill_shared_memory, delete_socket, create_socket
@@ -10,7 +10,7 @@ from server.action import fill_shared_memory, delete_socket, create_socket
 
 def primary_server_behavior(shared_memory_name, path_tube_1, path_tube_2):
     host = '127.0.0.1'
-    client_port = 11111
+    client_port = 4321
     attempt = 0
 
     shared_memory_primary_server = shared_memory.SharedMemory(shared_memory_name)
@@ -38,6 +38,7 @@ def primary_server_behavior(shared_memory_name, path_tube_1, path_tube_2):
                 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             time.sleep(1)
 
+    time.sleep(1)
     print('Primary server> Ready on port ', client_port)
     server_socket.listen(10)
 
@@ -67,11 +68,14 @@ def primary_server_behavior(shared_memory_name, path_tube_1, path_tube_2):
                 sys.exit("Tube not found" + error)
             break
 
+    time.sleep(2)
     connection.close()
 
     delete_socket(server_socket)
 
     print('Primary server> Connexion with client closed')
+
+    time.sleep(8)
 
     shared_memory_primary_server.close()
 
