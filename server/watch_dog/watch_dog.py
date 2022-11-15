@@ -26,7 +26,7 @@ def launch_watch_dog():
     name = "leclerc"
     create = True
 
-    #free_communication_system(name, path_tube1, path_tube2)
+    free_communication_system(name, path_tube1, path_tube2)
 
     shared_memory = create_shared_memory(name, create)
     create_tubes(path_tube1, path_tube2)
@@ -47,7 +47,7 @@ def launch_watch_dog():
     active_children = terminate_children()
     for child in active_children:
         child.join()
-    #free_communication_system(name, path_tube1, path_tube2)
+    free_communication_system(name, path_tube1, path_tube2)
 
     time.sleep(10)
     sys.exit(os.EX_OK)
