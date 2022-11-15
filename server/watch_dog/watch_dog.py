@@ -17,8 +17,8 @@ def launch_watch_dog():
     time.sleep(5)
 
     host = '127.0.0.1'
-    primary_server_port = 7654
-    secondary_server_port = 6543
+    primary_server_port = 13311
+    secondary_server_port = 14411
 
     path_tube1 = "/tmp/tubenommeprincipalsecond.fifo"
     path_tube2 = "/tmp/tubenommesecondprincipal.fifo"
