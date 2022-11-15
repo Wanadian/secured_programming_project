@@ -1,8 +1,10 @@
+#! /usr/bin/env python3
+# _*_ coding: utf8 _*_
+
 import socket
 import sys
 import time
-
-from server.action import delete_socket
+from server.action import delete_socket, create_socket
 
 
 def simulate_client():
@@ -10,7 +12,7 @@ def simulate_client():
     server_port = 11111
     counter = 0
 
-    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    client_socket = create_socket()
 
     time.sleep(2)
     try:

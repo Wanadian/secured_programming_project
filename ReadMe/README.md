@@ -63,7 +63,7 @@ Aussi, nous avons eu la chance aujourd'hui d'avoir eu un accompagnement au cours
 
 Il est vrai que tout au long de ce projet, nous avons rencontré un certains nombre de peau de banane :-)
 
-La première difficulté a été de bien comprendre le sujet et ce qui nous a été demandé car nous n'avons malheureusement pas eu beaucoup l'occasion de réaliser ce type de projet.
+La première difficulté a été de bien comprendre le sujet et ce qui nous a été demandé car nous n'avons malheureusement pas eu beaucoup l'occasion de réaliser ce type de projet.git 
 
 Ensuite, une fois cela compris, nous avons pu facilement lancer les divers exemples présent sur Moodle et comprendre ce qu'ils faisaient. Nous nous sommes intéresser à partir de là, à la mutualisation des systèmes d'échanges en commençant par la mise en oeuvre des tubes et des shared memory. Ces tubes ont, comme attendu, eu raison de nous pendant plusieurs heures puisque la communication entre nos deux serveurs (via ses tubes) ne se faisait de la manière escomptée. Toutefois, la mise en place des shared memory n'a pas posé trop de problème, si ce n'est la non suppression de cette dernière, nous obligeant de le faire manuellement lorsque le programme ne s'arrête pas de manière propre.
 

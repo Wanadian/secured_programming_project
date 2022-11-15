@@ -6,8 +6,7 @@ import socket
 import sys
 import time
 from threading import Thread
-from server.action import created_shared_memory, create_tubes, free_communication_system, terminate_children, \
-    delete_socket
+from server.action import create_shared_memory, create_tubes, free_communication_system, terminate_children, delete_socket, create_socket
 from server.primary_server.primary_server import primary_server_behavior
 from server.secondary_server.secondary_server import secondary_server_behavior
 
@@ -29,7 +28,7 @@ def launch_watch_dog():
 
     free_communication_system(name, path_tube1, path_tube2)
 
-    shared_memory = created_shared_memory(name, create)
+    shared_memory = create_shared_memory(name, create)
     create_tubes(path_tube1, path_tube2)
 
     open_watch_dog_connection_thread1 = Thread(target=open_watch_dog_connection, name="watch_Dog_to_primary_server", args=(host, primary_server_port))
@@ -85,7 +84,7 @@ def launch_secondary_server(shared_memory_name, path_tube_1, path_tube_2, host, 
 
 
 def open_watch_dog_connection(host, port):
-    watch_dog_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    watch_dog_socket = create_socket()
     counter = 0
     attempt = 0
     while attempt < 5:
@@ -126,7 +125,7 @@ def open_watch_dog_connection(host, port):
 
 
 def link_to_watch_dog(host, port):
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket = create_socket()
 
     time.sleep(2)
     try:

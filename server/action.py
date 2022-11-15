@@ -18,11 +18,17 @@ def create_tubes(path_tube_1, path_tube_2):
         sys.exit("Could not create tubes : " + error)
 
 
-def created_shared_memory(name, create):
+def create_shared_memory(name, create):
     try:
         return shared_memory.SharedMemory(name, create, sharedMemorySize)
     except (ValueError, FileExistsError, OSError) as error:
         sys.exit("Could not create shared memory : " + error)
+
+
+def create_socket():
+    created_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    created_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    return created_socket
 
 
 def fill_shared_memory(shared_memory, data):

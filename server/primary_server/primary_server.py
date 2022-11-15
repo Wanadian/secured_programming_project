@@ -5,7 +5,7 @@ import socket
 import sys
 import time
 from multiprocessing import shared_memory
-from server.action import fill_shared_memory, delete_socket
+from server.action import fill_shared_memory, delete_socket, create_socket
 
 
 def primary_server_behavior(shared_memory_name, path_tube_1, path_tube_2):
@@ -21,7 +21,7 @@ def primary_server_behavior(shared_memory_name, path_tube_1, path_tube_2):
     except BrokenPipeError as error:
         sys.exit("Could not open tubes : " + error)
 
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket = create_socket()
 
     while attempt < 5:
         try:
