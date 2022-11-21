@@ -1,35 +1,5 @@
 # Projet OSPS
 
-timeout :
-```
-try:
-        while True:
-            print("WD> Are you alive ?")
-            connexion.send(bytes('Are you alive ?', 'UTF-8'))
-            signal.signal(signal.SIGALRM, raiseTimeoutError)
-            signal.alarm(3)
-            try:
-                connexion.recv(1024).decode('UTF-8')
-            except TimeoutError:
-                print("WD> Action timeout")
-                connexion.send(bytes('EXIT', 'UTF-8'))
-                raise ConnectionError
-            finally:
-                signal.signal(signal.SIGALRM, signal.SIG_IGN)
-            time.sleep(2)
-    except ConnectionError:
-        print("Connexion with primary server aborted")
-        freeCommunicationSystem(sharedMemoryName, pathTube1, pathTube2)
-        activeChildren = terminateChildren()
-        for child in activeChildren:
-            child.join()
-        sys.exit(" A failure might have occurred : Secondary server did not respond in time")
-```
-
-![img.png](img.png)
-
-![img_3.png](img_3.png)
-
 ---
 ## Équipe de travail
 
@@ -45,9 +15,17 @@ Le projet est une application console qui peut être lancée en ligne de command
 
     python3 ./launcher.py
 
+Et 
+
+    python3 ./client_launcher.py
+
 L'initialisation des données et la mise en oeuvre de l'ensemble de la structure se fait place lors du début du lancement de l'application. En effet, lors du lancement nous allons créer automatiquement le WatchDog, ainsi que les deux serveurs (principal et secondaire).
 
-* Pour ce qui est de l'arrêt du projet, il s'arrête soit automatiquement si une anomalie est détectée par le Watcchdog, soit manuellement (au bout de 5 itérations) de façon à arrêter proprement l'esnemble des dispositifs réalisés.
+Pour ce qui est de l'arrêt du projet, il s'arrête soit automatiquement si une anomalie est détectée par le Watchdog, soit quand tous les serveurs sont arrêtés de façon à stopper proprement l'esnemble des dispositifs réalisés.
+
+Attention, pour que le projet se lance correctement, il est nécessaire d'utiliser la version 3.10 de python.
+
+Aussi, si vous devez relancer plusieurs fois le projet, il se peut que des problèmes de ports se présentent. Ainsi, pour régler ce problème, il vous suffit de changer les ports se situant dans le fichier du watchdog, de même que dans le client et dans le serveur principal (ces deux derniers ports doivent être identiques). Nous ne savons hélas pas pourquoi ce problème se produit, car il arrive sous machine distante WSL et non sous MAC. Malgré notre acharnement, nous n'avons pas réussi à déceler d'où pouvait provenir ce problème.
 
 ---
 ## Spécificités présentes
@@ -85,7 +63,7 @@ Aussi, nous avons eu la chance aujourd'hui d'avoir eu un accompagnement au cours
 
 Il est vrai que tout au long de ce projet, nous avons rencontré un certains nombre de peau de banane :-)
 
-La première difficulté a été de bien comprendre le sujet et ce qui nous a été demandé car nous n'avons malheureusement pas eu beaucoup l'occasion de réaliser ce type de projet.
+La première difficulté a été de bien comprendre le sujet et ce qui nous a été demandé car nous n'avons malheureusement pas eu beaucoup l'occasion de réaliser ce type de projet.git 
 
 Ensuite, une fois cela compris, nous avons pu facilement lancer les divers exemples présent sur Moodle et comprendre ce qu'ils faisaient. Nous nous sommes intéresser à partir de là, à la mutualisation des systèmes d'échanges en commençant par la mise en oeuvre des tubes et des shared memory. Ces tubes ont, comme attendu, eu raison de nous pendant plusieurs heures puisque la communication entre nos deux serveurs (via ses tubes) ne se faisait de la manière escomptée. Toutefois, la mise en place des shared memory n'a pas posé trop de problème, si ce n'est la non suppression de cette dernière, nous obligeant de le faire manuellement lorsque le programme ne s'arrête pas de manière propre.
 
@@ -93,7 +71,7 @@ Vient alors la réalisation des interactions par socket. Ici encore, nous avons 
 
 Aussi, comme attendu, nous avons eu aussi des problèmes avec la commande "execlp". En effet, une erreur de libération du segment mémoire survient, par conséquent nous avons fait le choi de supprimer cette commande. Malheureusement, nous avons manqué de temps pour revenir sur cette erreur".
 
-* Client ??
+De plus, lors de la mise en place du client, nous avons rencontré des problèmes au niveau de la transmission d'informations dans la shared memory. En effet, une fois qu'une chaîne de caractères était mise dans la shared memory, il était impossible de la comparer avec une autre chaîne de caractères classique, sûrement suite à un changement que nous ne voyons pas.
 
 ---
 ## Diagramme de séquence
