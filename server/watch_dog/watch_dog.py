@@ -14,11 +14,11 @@ from server.secondary_server.secondary_server import secondary_server_behavior
 def launch_watch_dog():
 
     print("Booting ...")
-    time.sleep(5)
+    time.sleep(3)
 
     host = '127.0.0.1'
-    primary_server_port = 11111
-    secondary_server_port = 22222
+    primary_server_port = 8078
+    secondary_server_port = 8079
 
     path_tube1 = "/tmp/tubenommeprincipalsecond.fifo"
     path_tube2 = "/tmp/tubenommesecondprincipal.fifo"
@@ -49,7 +49,7 @@ def launch_watch_dog():
         child.join()
     free_communication_system(name, path_tube1, path_tube2)
 
-    time.sleep(10)
+    time.sleep(5)
     sys.exit(os.EX_OK)
 
 
@@ -66,7 +66,7 @@ def launch_primary_server(shared_memory_name, path_tube_1, path_tube_2, host, po
         primary_server_behavior_thread.start()
         primary_server_behavior_thread.join()
         link_to_watch_dog_thread.join()
-        #sys.exit(os.EX_OK)
+        sys.exit(os.EX_OK)
 
 
 def launch_secondary_server(shared_memory_name, path_tube_1, path_tube_2, host, port):
@@ -82,7 +82,7 @@ def launch_secondary_server(shared_memory_name, path_tube_1, path_tube_2, host, 
         secondary_server_behavior_thread.start()
         secondary_server_behavior_thread.join()
         link_to_watch_dog_thread.join()
-        #sys.exit(os.EX_OK)
+        sys.exit(os.EX_OK)
 
 
 def open_watch_dog_connection(host, port):

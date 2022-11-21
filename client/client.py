@@ -9,7 +9,7 @@ from server.action import delete_socket, create_socket
 
 def simulate_client():
     server_host = '127.0.0.1'
-    server_port = 33333
+    server_port = 8086
     counter = 0
 
     client_socket = create_socket()

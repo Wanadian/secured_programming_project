@@ -11,7 +11,7 @@ FISA 4 Informatique
 ---
 ## Lancement du projet
 
-Le projet est une application console qui peut être lancée en ligne de commande avec : 
+Le projet est une application console qui peut être lancée **uniquement** sur Linux et en ligne de commande avec : 
 
     python3 ./launcher.py
 

@@ -10,7 +10,7 @@ from server.action import fill_shared_memory, delete_socket, create_socket
 
 def primary_server_behavior(shared_memory_name, path_tube_1, path_tube_2):
     host = '127.0.0.1'
-    client_port = 33333
+    client_port = 8086
     attempt = 0
 
     shared_memory_primary_server = shared_memory.SharedMemory(shared_memory_name)
