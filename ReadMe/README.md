@@ -19,6 +19,8 @@ Et
 
     python3 ./client_launcher.py
 
+Remarque : Le code est également disponible à l'adresse GitHub suivante : https://github.com/Wonkruu/secured_programming_project
+
 L'initialisation des données et la mise en oeuvre de l'ensemble de la structure se fait place lors du début du lancement de l'application. En effet, lors du lancement nous allons créer automatiquement le WatchDog, ainsi que les deux serveurs (principal et secondaire).
 
 Pour ce qui est de l'arrêt du projet, il s'arrête soit automatiquement si une anomalie est détectée par le Watchdog, soit quand tous les serveurs sont arrêtés de façon à stopper proprement l'esnemble des dispositifs réalisés.
