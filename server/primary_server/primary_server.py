@@ -10,7 +10,7 @@ from server.action import fill_shared_memory, delete_socket, create_socket
 
 def primary_server_behavior(shared_memory_name, path_tube_1, path_tube_2):
     host = '127.0.0.1'
-    client_port = 21122
+    client_port = 33333
     attempt = 0
 
     shared_memory_primary_server = shared_memory.SharedMemory(shared_memory_name)
@@ -19,7 +19,8 @@ def primary_server_behavior(shared_memory_name, path_tube_1, path_tube_2):
         fifo1 = open(path_tube_1, "w")
         fifo2 = open(path_tube_2, "r")
     except BrokenPipeError as error:
-        sys.exit("Could not open tubes : " + error)
+        print(error)
+        sys.exit("Could not open tubes : ")
 
     server_socket = create_socket()
 
@@ -54,18 +55,21 @@ def primary_server_behavior(shared_memory_name, path_tube_1, path_tube_2):
                 fifo1.flush()
                 fifo2.readline()
             except BrokenPipeError as error:
-                sys.exit("Tube not found" + error)
+                print(error)
+                sys.exit("Tube not found")
             try:
                 connection.send(bytes("ping", 'UTF-8'))
             except BrokenPipeError as error:
-                sys.exit("Connection not found" + error)
+                print(error)
+                sys.exit("Connection not found")
             print("Primary server> Reply sent to client")
         elif message_received == "exit":
             try:
                 fifo1.write("exit\n")
                 fifo1.flush()
             except BrokenPipeError as error:
-                sys.exit("Tube not found" + error)
+                print(error)
+                sys.exit("Tube not found")
             break
 
     time.sleep(2)

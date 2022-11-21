@@ -17,8 +17,8 @@ def launch_watch_dog():
     time.sleep(5)
 
     host = '127.0.0.1'
-    primary_server_port = 13311
-    secondary_server_port = 14411
+    primary_server_port = 11111
+    secondary_server_port = 22222
 
     path_tube1 = "/tmp/tubenommeprincipalsecond.fifo"
     path_tube2 = "/tmp/tubenommesecondprincipal.fifo"
@@ -136,7 +136,6 @@ def link_to_watch_dog(host, port):
         delete_socket(server_socket)
         sys.exit("Connexion to watch dog failed")
     print("Server> Connexion to watch dog established")
-
 
     while True:
         message_received = server_socket.recv(1024).decode('UTF-8')

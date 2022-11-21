@@ -15,14 +15,16 @@ def create_tubes(path_tube_1, path_tube_2):
         os.mkfifo(path_tube_1, 0o0600)
         os.mkfifo(path_tube_2, 0o0600)
     except OSError as error:
-        sys.exit("Could not create tubes : " + error)
+        print(error)
+        sys.exit("Could not create tubes : ")
 
 
 def create_shared_memory(name, create):
     try:
         return shared_memory.SharedMemory(name, create, sharedMemorySize)
     except (ValueError, FileExistsError, OSError) as error:
-        sys.exit("Could not create shared memory : " + error)
+        print(error)
+        sys.exit("Could not create shared memory : ")
 
 
 def create_socket():
@@ -37,19 +39,18 @@ def fill_shared_memory(shared_memory, data):
 
 def free_communication_system(shared_memory_name, path_tube_1, path_tube_2):
     try:
-        if(os.path.exists("/tmp/tubenommeprincipalsecond.fifo")):
+        if(os.path.exists(path_tube_1)):
             os.unlink(path_tube_1)
     except OSError as error:
         print("Warning : ", error)
     try:
-        if(os.path.exists("/tmp/tubenommesecondprincipal.fifo")):
+        if(os.path.exists(path_tube_2)):
             os.unlink(path_tube_2)
     except OSError as error:
         print("Warning : ", error)
     try:
-        if(os.path.exists("/run/shm/leclerc")):
-            shared_memory_to_delete = shared_memory.SharedMemory(shared_memory_name)
-            shared_memory_to_delete.unlink()
+        shared_memory_to_delete = shared_memory.SharedMemory(shared_memory_name)
+        shared_memory_to_delete.unlink()
     except OSError as error:
         print("Warning : ", error)
 
