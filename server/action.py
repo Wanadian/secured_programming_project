@@ -49,8 +49,9 @@ def free_communication_system(shared_memory_name, path_tube_1, path_tube_2):
     except OSError as error:
         print("Warning : ", error)
     try:
-        shared_memory_to_delete = shared_memory.SharedMemory(shared_memory_name)
-        shared_memory_to_delete.unlink()
+        if os.path.exists("/run/shm/leclerc"):
+            shared_memory_to_delete = shared_memory.SharedMemory(shared_memory_name)
+            shared_memory_to_delete.unlink()
     except OSError as error:
         print("Warning : ", error)
 

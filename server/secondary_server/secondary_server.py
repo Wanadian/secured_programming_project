@@ -7,7 +7,8 @@ from datetime import datetime
 
 
 def secondary_server_behavior(shared_memory_name, path_tube_1, path_tube_2):
-    shared_memory_secondary_server = shared_memory.SharedMemory(shared_memory_name)
+    if os.path.exists("/run/shm/leclerc"):
+        shared_memory_secondary_server = shared_memory.SharedMemory(shared_memory_name)
 
     if(os.path.exists("/tmp/tubenommeprincipalsecond.fifo") & os.path.exists("/tmp/tubenommesecondprincipal.fifo")):
         try:
