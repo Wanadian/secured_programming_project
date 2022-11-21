@@ -2,7 +2,7 @@
 # _*_ coding: utf8 _*_
 
 import socket
-import sys
+import sys, os
 import time
 from multiprocessing import shared_memory
 from server.action import fill_shared_memory, delete_socket, create_socket
@@ -10,7 +10,7 @@ from server.action import fill_shared_memory, delete_socket, create_socket
 
 def primary_server_behavior(shared_memory_name, path_tube_1, path_tube_2):
     host = '127.0.0.1'
-    client_port = 11111
+    client_port = 33333
     attempt = 0
 
     shared_memory_primary_server = shared_memory.SharedMemory(shared_memory_name)
@@ -19,7 +19,8 @@ def primary_server_behavior(shared_memory_name, path_tube_1, path_tube_2):
         fifo1 = open(path_tube_1, "w")
         fifo2 = open(path_tube_2, "r")
     except BrokenPipeError as error:
-        sys.exit("Could not open tubes : " + error)
+        print(error)
+        sys.exit("Could not open tubes : ")
 
     server_socket = create_socket()
 
@@ -38,6 +39,7 @@ def primary_server_behavior(shared_memory_name, path_tube_1, path_tube_2):
                 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             time.sleep(1)
 
+    time.sleep(1)
     print('Primary server> Ready on port ', client_port)
     server_socket.listen(10)
 
@@ -53,25 +55,31 @@ def primary_server_behavior(shared_memory_name, path_tube_1, path_tube_2):
                 fifo1.flush()
                 fifo2.readline()
             except BrokenPipeError as error:
-                sys.exit("Tube not found" + error)
+                print(error)
+                sys.exit("Tube not found")
             try:
                 connection.send(bytes("ping", 'UTF-8'))
             except BrokenPipeError as error:
-                sys.exit("Connection not found" + error)
+                print(error)
+                sys.exit("Connection not found")
             print("Primary server> Reply sent to client")
         elif message_received == "exit":
             try:
                 fifo1.write("exit\n")
                 fifo1.flush()
             except BrokenPipeError as error:
-                sys.exit("Tube not found" + error)
+                print(error)
+                sys.exit("Tube not found")
             break
 
+    time.sleep(2)
     connection.close()
 
     delete_socket(server_socket)
 
     print('Primary server> Connexion with client closed')
+
+    time.sleep(8)
 
     shared_memory_primary_server.close()
 

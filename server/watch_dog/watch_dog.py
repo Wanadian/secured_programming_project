@@ -17,8 +17,8 @@ def launch_watch_dog():
     time.sleep(5)
 
     host = '127.0.0.1'
-    primary_server_port = 22222
-    secondary_server_port = 33333
+    primary_server_port = 11111
+    secondary_server_port = 22222
 
     path_tube1 = "/tmp/tubenommeprincipalsecond.fifo"
     path_tube2 = "/tmp/tubenommesecondprincipal.fifo"
@@ -42,12 +42,14 @@ def launch_watch_dog():
     open_watch_dog_connection_thread1.join()
     open_watch_dog_connection_thread2.join()
 
-    os.wait()
+    time.sleep(5)
 
     active_children = terminate_children()
     for child in active_children:
         child.join()
     free_communication_system(name, path_tube1, path_tube2)
+
+    time.sleep(10)
     sys.exit(os.EX_OK)
 
 
@@ -64,7 +66,7 @@ def launch_primary_server(shared_memory_name, path_tube_1, path_tube_2, host, po
         primary_server_behavior_thread.start()
         primary_server_behavior_thread.join()
         link_to_watch_dog_thread.join()
-        sys.exit(os.EX_OK)
+        #sys.exit(os.EX_OK)
 
 
 def launch_secondary_server(shared_memory_name, path_tube_1, path_tube_2, host, port):
@@ -80,7 +82,7 @@ def launch_secondary_server(shared_memory_name, path_tube_1, path_tube_2, host, 
         secondary_server_behavior_thread.start()
         secondary_server_behavior_thread.join()
         link_to_watch_dog_thread.join()
-        sys.exit(os.EX_OK)
+        #sys.exit(os.EX_OK)
 
 
 def open_watch_dog_connection(host, port):
